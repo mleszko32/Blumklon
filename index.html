@@ -3,39 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klon e-SERVICES - Zaawansowany Podział Frontów</title>
+    <title>Klon e-SERVICES - Generator V2 + Blum UI</title>
     <style>
-        /* BAZOWY UKŁAD WZOROWANY NA BLUM */
+        /* BAZOWY UKŁAD */
         :root { --blum-orange: #f25f22; --bg-main: #f2f2f2; --panel-bg: #ffffff; --text-main: #333; --border-color: #e0e0e0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg-main); color: var(--text-main); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg-main); color: var(--text-main); }
         
-        /* GÓRNY PASEK */
         .top-navbar { position: absolute; top: 0; left: 0; width: 100%; height: 50px; background: #fff; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); box-sizing: border-box; }
         .logo-area { font-weight: 900; font-size: 1.2rem; color: var(--blum-orange); margin-right: 40px; }
         .project-name { font-size: 0.9rem; font-weight: bold; color: #555; margin: 0 auto; }
 
-        /* LEWY PANEL (Kategorie) */
         .sidebar-left { width: 260px; background: var(--panel-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; height: calc(100vh - 50px); z-index: 10; }
         .nav-menu { list-style: none; padding: 0; margin: 0; }
         .nav-item { border-bottom: 1px solid var(--border-color); }
         .nav-btn { width: 100%; text-align: left; padding: 15px 20px; background: none; border: none; font-size: 0.95rem; color: #555; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
         .nav-btn:hover { background: #f9f9f9; color: var(--blum-orange); }
         .nav-btn.active { background: #fff5f0; color: var(--text-main); border-left: 4px solid var(--blum-orange); padding-left: 16px; font-weight: bold; }
-
-        /* SUB-NARZĘDZIA W LEWYM PANELU */
         .sub-tools { display: none; padding: 15px; background: #fafafa; border-top: 1px solid #eee; }
         .tool-btn { width: 100%; padding: 10px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; border-radius: 2px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .tool-btn:hover { background: #fdfdfd; border-color: var(--blum-orange); color: var(--blum-orange); }
+        .tool-btn:hover { border-color: var(--blum-orange); color: var(--blum-orange); }
         .tool-icon { width: 18px; height: 18px; background: linear-gradient(to bottom, var(--blum-orange) 45%, #fff 45%, #fff 55%, var(--blum-orange) 55%); outline: 1px solid var(--blum-orange); }
 
-        /* OBSZAR ROBOCZY 3D/2D */
         .workspace { flex: 1; margin-top: 50px; height: calc(100vh - 50px); position: relative; display: flex; justify-content: center; align-items: center; }
         #canvas-container { width: 100%; height: 100%; }
         .view-controls { position: absolute; top: 15px; right: 15px; display: flex; border-radius: 4px; overflow: hidden; border: 1px solid #ccc; background: #fff; z-index: 10; }
         .view-controls button { border: none; padding: 8px 15px; background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: #555; }
         .view-controls button.active { background: #e0e0e0; }
 
-        /* PRAWY PANEL 1:1 BLUM */
         .sidebar-right { width: 360px; background: var(--panel-bg); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; height: calc(100vh - 50px); z-index: 10; box-shadow: -2px 0 5px rgba(0,0,0,0.02); }
         .right-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); color: #555; font-weight: 600; font-size: 0.95rem; text-transform: uppercase; background: #fff; }
         .right-header .star { color: var(--blum-orange); font-size: 1.2rem; cursor: pointer; background: none; border: none; padding: 0; outline: none; }
@@ -57,9 +51,7 @@
         .blum-row label { color: #555; flex: 1; font-size: 0.85rem; }
         .blum-row input[type="number"], .blum-row input[type="text"], .blum-row select { width: 110px; padding: 5px 8px; border: 1px solid #aaa; border-radius: 2px; text-align: right; color: #333; font-family: inherit; font-size: 0.85rem; box-sizing: border-box; }
         .blum-row input:focus, .blum-row select:focus { outline: none; border-color: var(--blum-orange); box-shadow: 0 0 0 1px rgba(242,95,34,0.3); }
-        
-        .blum-row input[type=number]::-webkit-inner-spin-button, 
-        .blum-row input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .blum-row input[type=number]::-webkit-inner-spin-button, .blum-row input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .blum-row input[type=number] { -moz-appearance: textfield; }
 
         .blum-readonly { display: flex; justify-content: space-between; margin-bottom: 8px; }
@@ -67,50 +59,31 @@
         .blum-readonly span { width: 110px; text-align: right; color: #888; font-size: 0.85rem; padding-right: 8px; box-sizing: border-box; font-weight: bold; }
         
         .spacer { height: 10px; }
+        .formula-input { width: 100% !important; text-align: center !important; font-weight: bold; color: var(--blum-orange) !important; background: #fff5f0; border-color: var(--blum-orange) !important; }
 
-        /* LISTA FRONTÓW BLUM */
-        .front-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; border-bottom: 1px solid #eee; font-size: 0.85rem; color: #555; background: #fff; }
-        .front-list-item .name { color: var(--blum-orange); font-weight: bold; }
-        .front-list-item .dim { font-weight: bold; color: #333; }
-
-        /* --- MODAL (PODZIAŁ FRONTÓW) --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-box { background: #fff; width: 750px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
-        .modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; font-weight: normal; }
-        .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--blum-orange); font-weight: bold; }
-        .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
-        .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; text-align: right; }
-        
-        .btn-primary { background: var(--blum-orange); color: white; border: none; padding: 8px 25px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
-        .btn-primary:hover { background: #e0531b; }
-
-        .m-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; }
-        .m-input-row label { font-size: 0.9rem; color: #555; }
-        .m-input-row input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 2px; font-size: 1rem; color: var(--text-main); font-weight: bold; }
-        .m-input-row input:focus { border-color: var(--blum-orange); outline: none; }
-
-        .m-acc-header { padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer; color: #333; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 10px; }
-        .m-acc-header:hover { color: var(--blum-orange); }
-        .m-acc-caret { color: var(--blum-orange); font-family: monospace; font-size: 1.2rem; font-weight: bold; transition: transform 0.2s; display: inline-block; width: 15px; text-align: center; }
-        .m-acc-header.active .m-acc-caret { transform: rotate(90deg); }
-        .m-acc-content { padding: 20px 10px; display: none; }
-        .m-acc-content.active { display: block; }
-
-        /* Ilustracje szuflad w modalu */
-        .illu-box { width: 140px; height: 180px; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid #ccc; border-right: 15px solid #e0e0e0; border-top: 6px solid #f0f0f0; background: #fff; padding: 2px; box-sizing: border-box; }
-        .illu-drawer { background: var(--blum-orange); display: flex; justify-content: center; align-items: center; color: #fff; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(0,0,0,0.1); width: 100%; }
+        /* NOWE AKORDEONY FRONTÓW */
+        .f-acc-item { border-top: 1px solid #eee; background: #fff; }
+        .f-acc-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; cursor: pointer; font-size: 0.85rem; color: #555; transition: background 0.2s; }
+        .f-acc-header:hover { background: #fafafa; }
+        .f-acc-header .name { color: var(--blum-orange); font-weight: bold; }
+        .f-acc-header .dim { font-weight: bold; color: #333; }
+        .f-caret { display: inline-block; transition: 0.2s; color: var(--blum-orange); font-family: monospace; font-size: 1rem; margin-right: 5px; transform: scaleX(0.8); }
+        .f-acc-item.active .f-caret { transform: rotate(90deg) scaleX(0.8); }
+        .f-acc-content { display: none; padding: 15px 20px; background: #fdfdfd; border-top: 1px dashed #eee; border-bottom: 2px solid #f25f22; }
+        .f-acc-item.active .f-acc-content { display: block; }
     </style>
     <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
+    <!-- GÓRNY PASEK -->
     <div class="top-navbar">
         <div class="logo-area">blum</div>
-        <div class="project-name">Nazwa korpusu: Zaawansowany Korpus</div>
+        <div class="project-name">Nazwa korpusu: Zintegrowany V2 z UI</div>
     </div>
 
+    <!-- LEWY PANEL -->
     <div class="sidebar-left">
         <ul class="nav-menu">
             <li class="nav-item">
@@ -119,7 +92,7 @@
             <li class="nav-item">
                 <button class="nav-btn" id="btn-fronty" onclick="switchMainTab('fronty')">Fronty <span style="color:#aaa;">›</span></button>
                 <div class="sub-tools" id="sub-tools-fronty">
-                    <button class="tool-btn" onclick="openSplitModal()">
+                    <button class="tool-btn" onclick="document.getElementById('front_formula').focus(); document.getElementById('front_formula').select();">
                         <div class="tool-icon"></div> Szczelina pozioma (Podział)
                     </button>
                 </div>
@@ -129,15 +102,16 @@
         </ul>
     </div>
 
+    <!-- ŚRODEK -->
     <div class="workspace">
-        <div class="view-controls">
-            <button class="active">przód (3D)</button>
-        </div>
+        <div class="view-controls"><button class="active">przód (3D)</button></div>
         <div id="canvas-container"></div>
     </div>
 
+    <!-- PRAWY PANEL -->
     <div class="sidebar-right" id="right-panel">
         
+        <!-- ZAKŁADKA 1: KONSTRUKCJA KORPUSU -->
         <div id="tab-konstrukcja" class="main-tab active">
             <div class="right-header">KONSTRUKCJA KORPUSU <button class="star">☆</button></div>
             <div class="right-scroll-area">
@@ -146,7 +120,6 @@
                 <div class="r-acc-content active">
                     <div class="blum-row"><label>Wysokość</label><input type="number" id="cab_h" value="720" onchange="updateState()"></div>
                     <div class="blum-row"><label>Szerokość</label><input type="number" id="cab_w" value="600" onchange="updateState()"></div>
-                    
                     <div class="blum-row"><label>Głębokość boku</label><input type="number" id="cab_d" value="510" onchange="updateDepth('bok')"></div>
                     <div class="blum-row" style="background:#fdf5f0; padding:4px 0; border-radius:2px;"><label style="color:#e65100;">Głębokość całkowita</label><input type="number" id="cab_total_d" value="528" onchange="updateDepth('total')" style="border-color:#ffb74d;"></div>
                     
@@ -166,48 +139,31 @@
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Wieniec górny</div>
                 <div class="r-acc-content">
-                    <div class="blum-row"><label>Konstrukcja</label>
-                        <select id="top_type" onchange="updateState()">
-                            <option value="wieniec">Wieniec górny</option><option value="2_trawersy">2 trawersy</option><option value="1_przod">1 trawers z przodu</option><option value="1_tyl">1 trawers z tyłu</option><option value="brak">Brak wieńca górnego</option>
-                        </select>
-                    </div>
+                    <div class="blum-row"><label>Konstrukcja</label><select id="top_type" onchange="updateState()"><option value="wieniec">Wieniec górny</option><option value="2_trawersy">2 trawersy</option><option value="1_przod">1 trawers z przodu</option><option value="1_tyl">1 trawers z tyłu</option><option value="brak">Brak wieńca górnego</option></select></div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="top_t" value="18" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Łącznik lewy</label><select id="top_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
-                    <div class="blum-row"><label>Łącznik prawy</label><select id="top_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
+                    <div class="blum-row"><label>Łącznik lewy/prawy</label><select id="top_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
                     <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="top_wpust" value="0" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="top_front_off" value="0" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="top_back_off" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie przód/tył</label><input type="number" id="top_front_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Wieniec dolny</div>
                 <div class="r-acc-content">
-                    <div class="blum-row"><label>Konstrukcja</label>
-                        <select id="bot_type" onchange="updateState()">
-                            <option value="wieniec">Wieniec dolny</option><option value="2_trawersy">2 trawersy</option><option value="1_przod">1 trawers z przodu</option><option value="1_tyl">1 trawers z tyłu</option><option value="brak">Brak wieńca dolnego</option>
-                        </select>
-                    </div>
+                    <div class="blum-row"><label>Konstrukcja</label><select id="bot_type" onchange="updateState()"><option value="wieniec">Wieniec dolny</option><option value="2_trawersy">2 trawersy</option><option value="1_przod">1 trawers z przodu</option><option value="1_tyl">1 trawers z tyłu</option><option value="brak">Brak wieńca dolnego</option></select></div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="bot_t" value="18" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Łącznik lewy</label><select id="bot_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
-                    <div class="blum-row"><label>Łącznik prawy</label><select id="bot_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
+                    <div class="blum-row"><label>Łącznik lewy/prawy</label><select id="bot_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
                     <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="bot_wpust" value="0" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="bot_front_off" value="0" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="bot_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Lewa strona korpusu</div>
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label><select id="left_type" onchange="updateState()"><option value="bok">Bok korpusu</option><option value="brak">Brak boku</option></select></div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="left_t" value="18" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="left_front_off" value="0" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="left_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Prawa strona korpusu</div>
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label><select id="right_type" onchange="updateState()"><option value="bok">Bok korpusu</option><option value="brak">Brak boku</option></select></div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="right_t" value="18" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="right_front_off" value="0" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="right_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ścianka tylna</div>
@@ -216,14 +172,14 @@
                     <div class="blum-row"><label>Grubość HDF</label><input type="number" id="back_t" value="3" onchange="updateDepth('bok')"></div>
                     <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="back_z" value="20" onchange="updateState()"></div>
                 </div>
-
             </div>
         </div>
 
+        <!-- ZAKŁADKA 2: FRONTY -->
         <div id="tab-fronty" class="main-tab">
             <div class="right-header">FRONTY <button class="star">☆</button></div>
             <div class="right-scroll-area">
-                <div class="r-acc-header active" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ustawienia Frontów</div>
+                <div class="r-acc-header active" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ustawienia Globalne</div>
                 <div class="r-acc-content active">
                     <div class="blum-row"><label>Grubość frontu</label><input type="number" id="front_t" value="18" onchange="updateDepth('bok')"></div>
                     <div class="blum-row"><label>Sposób nałożenia</label>
@@ -232,9 +188,17 @@
                             <option value="wpuszczany">wpuszczany</option>
                         </select>
                     </div>
+                    
+                    <div class="spacer"></div>
+                    <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px; font-weight:bold;">Podział poziomy (Wzór)</label>
+                    <div class="blum-row" style="margin-bottom: 15px;">
+                        <input type="text" id="front_formula" class="formula-input" value="2:2:141" onchange="updateState()">
+                    </div>
+                    <div style="font-size: 0.75rem; color: #888; text-align: center; margin-top:-10px; margin-bottom:15px;">np. 3 lub 2:2:141</div>
                 </div>
                 
-                <div id="fronts-list-container" style="border-top:2px solid #eee;"></div>
+                <!-- Tu wygeneruje się lista akordeonów dla frontów -->
+                <div id="fronts-list-container" style="border-top:1px solid #ddd;"></div>
             </div>
         </div>
 
@@ -242,91 +206,14 @@
         <div id="tab-okucia" class="main-tab"><div class="right-header">OKUCIA I NAWIERTY <button class="star">☆</button></div></div>
     </div>
 
-    <div class="modal-overlay" id="splitModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3>Podziel wysokość</h3>
-                <button class="modal-close" onclick="closeSplitModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="m-input-row">
-                    <label>Podział frontów lub ścianek tylnych: <span style="color:var(--blum-orange);">*</span></label>
-                    <input type="text" id="modal_formula" value="">
-                </div>
-                <p style="font-size:0.85rem; color:#666; margin-top:-15px; margin-bottom:20px;">Podział definiuje ilość i wysokość frontów lub ścianek tylnych.<br>Dostępne są następujące możliwości:</p>
-
-                <div class="m-acc-header active" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanowanie frontów lub ścianek tylnych równej wysokości</div>
-                <div class="m-acc-content active">
-                    <div style="display:flex; gap:20px;">
-                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
-                            Proszę podać wybraną ilość.<br><br>
-                            <b>Przykład:</b> Wpis: <span style="color:#000;">3</span><br><br>
-                            <b>Wynik:</b> 3 fronty lub ścianki tylne o równej wysokości.
-                        </div>
-                        <div class="illu-box">
-                            <div class="illu-drawer" style="height:33.3%;">1/3</div>
-                            <div class="illu-drawer" style="height:33.3%;">1/3</div>
-                            <div class="illu-drawer" style="height:33.3%;">1/3</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="m-acc-header" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanuj z podziałem</div>
-                <div class="m-acc-content">
-                    <div style="display:flex; gap:20px;">
-                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
-                            Proszę podać wybrane udziały w systemie podziału.<br><br>
-                            <b>Przykład:</b> (Podział na 6) – wpis: <span style="color:#000;">3:2:1</span><br><br>
-                            <b>Wynik:</b> 3 fronty lub ścianki tylne o danych udziałach w podziale.
-                        </div>
-                        <div class="illu-box">
-                            <div class="illu-drawer" style="height:16.6%;">1/6</div>
-                            <div class="illu-drawer" style="height:33.3%;">2/6</div>
-                            <div class="illu-drawer" style="height:50%;">3/6</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="m-acc-header" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanuj z wartościami stałymi</div>
-                <div class="m-acc-content">
-                    <div style="display:flex; gap:20px;">
-                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
-                            Proszę podać wybrane wysokości frontów lub ścianek tylnych (w mm).<br><br>
-                            <b>Przykład:</b> Wpis: <span style="color:#000;">447:298:149</span><br><br>
-                            <b>Wynik:</b> 3 fronty lub ścianki tylne o wysokościach wprowadzonych w mm.
-                        </div>
-                        <div class="illu-box">
-                            <div class="illu-drawer" style="height:25%;">149</div>
-                            <div class="illu-drawer" style="height:35%;">298</div>
-                            <div class="illu-drawer" style="height:40%;">447</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="m-acc-header" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanuj z wartościami stałymi i pozostałymi</div>
-                <div class="m-acc-content">
-                    <div style="display:flex; gap:20px;">
-                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
-                            Proszę podać wybrane wysokości frontów z wartościami stałymi. Wpisując `1` jako część pozostałą, automatycznie zostanie wyliczona wysokość.<br><br>
-                            <b>Przykład:</b> Wpis: <span style="color:#000;">1:149</span><br><br>
-                            <b>Wynik:</b> 2 fronty, z czego dolny to reszta z podziału, a górny ma 149 mm.
-                        </div>
-                        <div class="illu-box">
-                            <div class="illu-drawer" style="height:30%;">149</div>
-                            <div class="illu-drawer" style="height:70%;">1 (reszta)</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button class="btn-primary" onclick="applySplitModal()">Zastosuj</button>
-            </div>
-        </div>
-    </div>
-
 <script>
-    // --- AKORDEONY UI ---
+    // --- BAZA SYSTEMÓW SZUFLAD Z V2 ---
+    const DRAWER_DB = { 
+        "44": { name: "GTV Axis Pro(16mm)", default: "C", types: [{id:"A", label:"A (Niska)", minFront:105, boxH:84, frontHolesY:[47.5,79.5]}, {id:"B", label:"B (Średnia)", minFront:160, boxH:116, frontHolesY:[47.5,79.5]}, {id:"C", label:"C (Wysoka)", minFront:192, boxH:167, frontHolesY:[47.5,79.5,143.5,175.5]}, {id:"D", label:"D (B. Wysoka)", minFront:224, boxH:199, frontHolesY:[47.5,79.5,143.5,175.5]}], lengths: [250,300,350,400,450,500,550,600] },
+        "54": { name: "Blum Merivobox", default: "K", types: [{id:"N", label:"N (Niska)", minFront:85.5, boxH:69, frontHolesY:[51,83]}, {id:"M", label:"M (Średnia)", minFront:108, boxH:91, frontHolesY:[51,83]}, {id:"K", label:"K (Wysoka)", minFront:146, boxH:130, frontHolesY:[51,83]}, {id:"E", label:"E (B. Wysoka)", minFront:209, boxH:193, frontHolesY:[51,83,147,179]}], lengths: [270,300,350,400,450,500,550,600] }
+    };
+
+    // --- UI FUNKCJE ---
     function toggleRightAcc(el) {
         let content = el.nextElementSibling;
         let isActive = el.classList.contains('active');
@@ -334,106 +221,64 @@
         else { el.classList.add('active'); content.classList.add('active'); }
     }
 
-    function toggleModalAcc(el) {
-        let content = el.nextElementSibling;
-        let isActive = el.classList.contains('active');
-        if (isActive) { el.classList.remove('active'); content.classList.remove('active'); } 
-        else { el.classList.add('active'); content.classList.add('active'); }
+    function toggleFrontAcc(el) {
+        let item = el.parentElement;
+        item.classList.toggle('active');
     }
 
     function switchMainTab(tabId) {
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + tabId).classList.add('active');
-        
-        document.querySelectorAll('.main-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
         document.getElementById('tab-' + tabId).classList.add('active');
-
         document.querySelectorAll('.sub-tools').forEach(t => t.style.display = 'none');
         let subTool = document.getElementById('sub-tools-' + tabId);
         if(subTool) subTool.style.display = 'block';
     }
 
-    // --- LOGIKA MODALU PODZIAŁU ---
-    function openSplitModal() {
-        document.getElementById('modal_formula').value = cabinetState.fronts.formula;
-        document.getElementById('splitModal').style.display = 'flex';
-        document.getElementById('modal_formula').focus();
-        document.getElementById('modal_formula').select();
-    }
-    
-    function closeSplitModal() {
-        document.getElementById('splitModal').style.display = 'none';
-    }
-
-    function applySplitModal() {
-        let val = document.getElementById('modal_formula').value;
-        cabinetState.fronts.formula = val;
-        closeSplitModal();
-        updateState(); // Odśwież widok z nowym podziałem
-    }
-
-    // --- KALKULATOR GŁĘBOKOŚCI ---
     function updateDepth(source) {
         let tFront = parseFloat(document.getElementById('front_t').value) || 18;
         let tPlecy = parseFloat(document.getElementById('back_t').value) || 3;
         let backType = document.getElementById('back_type').value;
 
         let extraDepth = tFront;
-        if (backType === 'nakladana') { extraDepth += tPlecy; }
+        if (backType === 'nakladana') extraDepth += tPlecy;
 
         if (source === 'bok') {
             let dBox = parseFloat(document.getElementById('cab_d').value) || 510;
             document.getElementById('cab_total_d').value = dBox + extraDepth;
-        } 
-        else if (source === 'total') {
+        } else if (source === 'total') {
             let total = parseFloat(document.getElementById('cab_total_d').value) || 528;
             document.getElementById('cab_d').value = total - extraDepth;
         }
         updateState();
     }
 
-    // --- PARSER WZORU BLUM (ZAAWANSOWANE PROPORCJE I WARTOŚCI STAŁE) ---
+    // --- PARSER WZORU (PROPORCJE I WARTOŚCI STAŁE) ---
     function parseBlumFormula(formulaStr, totalSpace, gapSize) {
         if (!formulaStr) return [];
         let s = formulaStr.replace(/\s+/g, '').toLowerCase();
 
-        // 1. Zwykła cyfra (np. "3" -> 3 równe fronty)
         if (/^\d+$/.test(s)) {
             let c = parseInt(s);
             if (c > 0 && c <= 15) return Array(c).fill((totalSpace - (c - 1) * gapSize) / c);
         }
 
-        // Dzielimy ciąg po dwukropkach, średnikach, przecinkach lub plusach
         let tokens = s.split(/[:;,+]/).filter(t => t !== '');
-        
-        // Sprawdzamy, czy w formule są jakieś "duże" wymiary (powyżej 20 mm).
-        // Minimalny front to ok. 50mm, więc wszystko poniżej 20 traktujemy jako "udział/proporcję".
         let hasLargeNumbers = tokens.some(t => parseFloat(t) >= 20);
-        
-        let fixedSum = 0;
-        let totalParts = 0;
+        let fixedSum = 0; let totalParts = 0;
 
         let parsedData = tokens.map(t => {
-            let isPart = false;
-            let val = 1;
-
+            let isPart = false; let val = 1;
             if (t.includes('*') || t.includes('r')) {
-                // Jeśli ktoś wpisze '*', '2*' itp.
-                isPart = true;
-                val = parseFloat(t) || 1; 
+                isPart = true; val = parseFloat(t) || 1; 
             } else {
                 let num = parseFloat(t);
                 if (!isNaN(num)) {
-                    // Jeśli mamy duże liczby w formule (np. 141), to małe cyfry (<20) traktujemy jako proporcje!
-                    // Jeśli nie mamy dużych liczb (np. "3:2:1"), to wszystko jest proporcją.
                     if ((hasLargeNumbers && num < 20) || !hasLargeNumbers) {
-                        isPart = true;
-                        val = num;
+                        isPart = true; val = num;
                     } else {
-                        // To jest wymiar podany na sztywno (np. 141)
-                        isPart = false;
-                        val = num;
-                        fixedSum += val;
+                        isPart = false; val = num; fixedSum += val;
                     }
                 }
             }
@@ -441,26 +286,17 @@
             return { isPart, val };
         });
 
-        // Obliczamy ile miejsca zostało po odjęciu stałych wymiarów i szczelin
         let gapsTotal = (tokens.length - 1) * gapSize;
-        let availableForParts = totalSpace - fixedSum - gapsTotal;
-        if (availableForParts < 0) availableForParts = 0; // Zabezpieczenie przed ujemnymi wymiarami
+        let availableForParts = Math.max(0, totalSpace - fixedSum - gapsTotal);
 
         let resultArr = parsedData.map(item => {
-            if (item.isPart) {
-                // Przydzielamy wymiar z reszty proporcjonalnie do "udziałów"
-                return totalParts > 0 ? (availableForParts * (item.val / totalParts)) : 0;
-            } else {
-                return item.val; // Wymiar na sztywno
-            }
+            return item.isPart ? (totalParts > 0 ? (availableForParts * (item.val / totalParts)) : 0) : item.val;
         });
 
-        // Ważne! W systemach klasy Blum wpisujemy od dołu do góry (np. dół:środek:góra).
-        // My rysujemy model od góry do dołu, więc odwracamy tablicę.
-        return resultArr.reverse();
+        return resultArr.reverse(); // Dół -> Góra = Index 0 -> Max
     }
 
-    // --- GLOBALNY STAN KORPUSU ---
+    // --- GLOBALNY STAN ---
     let cabinetState = {
         box: { h: 720, w: 600, d: 510 },
         gaps: { t: 8, b: 0, l: 2, r: 2, f: 3 },
@@ -471,12 +307,28 @@
             right: { type: 'bok', t: 18, frontOff: 0, backOff: 0 },
             back: { type: 'nut', t: 3, zOff: 20 }
         },
-        fronts: { t: 18, overlay: 'nakladany', formula: '3', output: [] }
+        fronts: { t: 18, overlay: 'nakladany', formula: '2:2:141', items: [] }
     };
 
-    function updateState() {
-        let s = cabinetState;
-        let p = s.parts;
+    function updateIndividualFront(index, key, value) {
+        if(cabinetState.fronts.items[index]) {
+            cabinetState.fronts.items[index][key] = value;
+            if(key === 'h') document.getElementById('front_formula').value = 'Ręczna edycja'; // Przerwanie formuły
+            updateState(false); // Przerysuj bez nadpisywania wymiarów formułą
+        }
+    }
+
+    function generateSystemOptions(selectedSys) {
+        let opts = '';
+        for(let key in DRAWER_DB) {
+            let sel = (key === selectedSys) ? 'selected' : '';
+            opts += `<option value="${key}" ${sel}>${DRAWER_DB[key].name}</option>`;
+        }
+        return opts;
+    }
+
+    function updateState(recalculateFormula = true) {
+        let s = cabinetState; let p = s.parts;
         
         s.box.h = parseFloat(document.getElementById('cab_h').value) || 720;
         s.box.w = parseFloat(document.getElementById('cab_w').value) || 600;
@@ -488,269 +340,126 @@
         s.gaps.r = parseFloat(document.getElementById('gap_r').value) || 0;
         s.gaps.f = parseFloat(document.getElementById('gap_f').value) || 0;
 
-        p.top.type = document.getElementById('top_type').value;
-        p.top.t = parseFloat(document.getElementById('top_t').value) || 18;
-        p.top.connL = document.getElementById('top_conn_l').value;
-        p.top.connR = document.getElementById('top_conn_r').value;
-        p.top.wpust = parseFloat(document.getElementById('top_wpust').value) || 0;
-        p.top.frontOff = parseFloat(document.getElementById('top_front_off').value) || 0;
-        p.top.backOff = parseFloat(document.getElementById('top_back_off').value) || 0;
+        p.top.type = document.getElementById('top_type').value; p.top.t = parseFloat(document.getElementById('top_t').value) || 18;
+        p.bot.type = document.getElementById('bot_type').value; p.bot.t = parseFloat(document.getElementById('bot_t').value) || 18;
+        p.left.type = document.getElementById('left_type').value; p.left.t = parseFloat(document.getElementById('left_t').value) || 18;
+        p.right.type = document.getElementById('right_type').value; p.right.t = parseFloat(document.getElementById('right_t').value) || 18;
 
-        p.bot.type = document.getElementById('bot_type').value;
-        p.bot.t = parseFloat(document.getElementById('bot_t').value) || 18;
-        p.bot.connL = document.getElementById('bot_conn_l').value;
-        p.bot.connR = document.getElementById('bot_conn_r').value;
-        p.bot.wpust = parseFloat(document.getElementById('bot_wpust').value) || 0;
-        p.bot.frontOff = parseFloat(document.getElementById('bot_front_off').value) || 0;
-        p.bot.backOff = parseFloat(document.getElementById('bot_back_off').value) || 0;
+        let wewH = s.box.h - (p.top.type === 'brak' ? 0 : p.top.t) - (p.bot.type === 'brak' ? 0 : p.bot.t);
+        let wewW = s.box.w - (p.left.type === 'brak' ? 0 : p.left.t) - (p.right.type === 'brak' ? 0 : p.right.t);
+        document.getElementById('in_h').innerText = wewH; document.getElementById('in_w').innerText = wewW;
 
-        p.left.type = document.getElementById('left_type').value;
-        p.left.t = parseFloat(document.getElementById('left_t').value) || 18;
-        p.left.frontOff = parseFloat(document.getElementById('left_front_off').value) || 0;
-        p.left.backOff = parseFloat(document.getElementById('left_back_off').value) || 0;
-        
-        p.right.type = document.getElementById('right_type').value;
-        p.right.t = parseFloat(document.getElementById('right_t').value) || 18;
-        p.right.frontOff = parseFloat(document.getElementById('right_front_off').value) || 0;
-        p.right.backOff = parseFloat(document.getElementById('right_back_off').value) || 0;
-
-        p.back.type = document.getElementById('back_type').value;
-        p.back.t = parseFloat(document.getElementById('back_t').value) || 3;
-        p.back.zOff = parseFloat(document.getElementById('back_z').value) || 0;
-
-        // Wymiary wewnętrzne HTML update
-        let l_t = (p.left.type === 'brak') ? 0 : p.left.t;
-        let r_t = (p.right.type === 'brak') ? 0 : p.right.t;
-        let top_t = (p.top.type === 'brak') ? 0 : p.top.t;
-        let bot_t = (p.bot.type === 'brak') ? 0 : p.bot.t;
-
-        let wewH = s.box.h - top_t - bot_t - p.top.wpust - p.bot.wpust;
-        let wewW = s.box.w - l_t - r_t;
-        let wewD = s.box.d - (p.back.type === 'nut' ? p.back.zOff : 0);
-        
-        document.getElementById('in_h').innerText = wewH;
-        document.getElementById('in_w').innerText = wewW;
-        document.getElementById('in_d').innerText = wewD;
-
-        // Zczytanie Frontów
         s.fronts.t = parseFloat(document.getElementById('front_t').value) || 18;
         s.fronts.overlay = document.getElementById('front_overlay').value;
+        if(recalculateFormula) s.fronts.formula = document.getElementById('front_formula').value;
 
-        // Obliczanie podziału frontów (TOP-DOWN)
-        let totalFrontSpaceH = s.box.h - s.gaps.t - s.gaps.b;
-        if (s.fronts.overlay === 'wpuszczany') {
-            totalFrontSpaceH = wewH - s.gaps.t - s.gaps.b;
-        }
-        
-        s.fronts.output = parseBlumFormula(s.fronts.formula, totalFrontSpaceH, s.gaps.f);
+        // Obliczanie frontów
+        let totalH = s.fronts.overlay === 'wpuszczany' ? wewH - s.gaps.t - s.gaps.b : s.box.h - s.gaps.t - s.gaps.b;
+        let frontW = s.fronts.overlay === 'wpuszczany' ? wewW - s.gaps.l - s.gaps.r : s.box.w - s.gaps.l - s.gaps.r;
 
-        // Wygenerowanie listy frontów
-        let listHtml = '';
-        let frontW = s.box.w - s.gaps.l - s.gaps.r;
-        if (s.fronts.overlay === 'wpuszczany') frontW = wewW - s.gaps.l - s.gaps.r;
-
-        if(s.fronts.output && s.fronts.output.length > 0) {
-            s.fronts.output.forEach((h, index) => {
-                // Ponieważ tablica jest odwrócona (najwyższy front na index 0), blumNum liczymy odwrotnie
-                let blumNum = s.fronts.output.length - index;
-                listHtml += `
-                <div class="front-list-item">
-                    <span class="name">› A/${blumNum} Front</span>
-                    <span class="dim">${h.toFixed(1)} x ${frontW.toFixed(1)} mm</span>
-                </div>`;
+        if (recalculateFormula) {
+            let calculatedHeights = parseBlumFormula(s.fronts.formula, totalH, s.gaps.f);
+            
+            // Zachowaj stare ustawienia typów/systemów jeśli zgadza się ilość
+            let newItems = [];
+            calculatedHeights.forEach((h, i) => {
+                let existing = s.fronts.items[i] || { type: 'drawer', sys: '44' };
+                newItems.push({ h: h, w: frontW, type: existing.type, sys: existing.sys });
             });
-        } else {
-            listHtml = `<div style="padding: 15px 20px; color:#d32f2f; font-size:0.85rem; font-weight:bold; background:#fff;">Błędna formuła. Wpisz np. 3 lub 447:298:149</div>`;
+            s.fronts.items = newItems;
         }
+
+        // --- RENDER HTML LISTY FRONTÓW AKORDEONY ---
+        let listHtml = '';
+        s.fronts.items.forEach((front, index) => {
+            let blumNum = s.fronts.items.length - index;
+            listHtml += `
+            <div class="f-acc-item">
+                <div class="f-acc-header" onclick="toggleFrontAcc(this)">
+                    <span class="name"><span class="f-caret">></span> A/${blumNum} Front</span>
+                    <span class="dim">${front.h.toFixed(1)} x ${front.w.toFixed(1)} mm 🗑️</span>
+                </div>
+                <div class="f-acc-content">
+                    <div class="blum-row"><label>Wysokość</label><input type="number" value="${front.h.toFixed(1)}" onchange="updateIndividualFront(${index}, 'h', parseFloat(this.value))"></div>
+                    <div class="blum-row"><label>Szerokość</label><input type="number" value="${front.w.toFixed(1)}" onchange="updateIndividualFront(${index}, 'w', parseFloat(this.value))"></div>
+                    <div class="blum-row" style="margin-top:12px; border-top:1px solid #eee; padding-top:8px;">
+                        <label>Wypełnienie</label>
+                        <select onchange="updateIndividualFront(${index}, 'type', this.value)">
+                            <option value="drawer" ${front.type === 'drawer' ? 'selected' : ''}>Szuflada</option>
+                            <option value="door" ${front.type === 'door' ? 'selected' : ''}>Drzwi</option>
+                        </select>
+                    </div>
+                    <div class="blum-row" style="${front.type === 'door' ? 'display:none;' : ''}">
+                        <label>System Szuflady</label>
+                        <select onchange="updateIndividualFront(${index}, 'sys', this.value)">
+                            ${generateSystemOptions(front.sys)}
+                        </select>
+                    </div>
+                </div>
+            </div>`;
+        });
         document.getElementById('fronts-list-container').innerHTML = listHtml;
 
         render3D();
     }
 
-    // --- SILNIK 3D (Three.js) ---
+    // --- SILNIK 3D ---
     let scene, camera, renderer, group, controls;
 
     function init3D() {
         let container = document.getElementById('canvas-container');
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xe8ebed);
-        
+        scene = new THREE.Scene(); scene.background = new THREE.Color(0xe8ebed);
         camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, 10000);
         camera.position.set(800, 1000, 1800);
-        
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(container.clientWidth, container.clientHeight);
         container.appendChild(renderer.domElement);
-        
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 400, 0);
-        controls.enableDamping = true;
-        
-        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-        let dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        dirLight.position.set(500, 1000, 800);
-        scene.add(dirLight);
-
+        controls = new THREE.OrbitControls(camera, renderer.domElement); controls.target.set(0, 400, 0); controls.enableDamping = true;
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8)); let dl = new THREE.DirectionalLight(0xffffff, 0.4); dl.position.set(500, 1000, 800); scene.add(dl);
         scene.add(new THREE.GridHelper(2000, 40, 0xcccccc, 0xdddddd));
-        group = new THREE.Group();
-        scene.add(group);
-
+        group = new THREE.Group(); scene.add(group);
         animate();
-        window.addEventListener('resize', () => {
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-        });
+        window.addEventListener('resize', () => { renderer.setSize(container.clientWidth, container.clientHeight); camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); });
     }
 
-    function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
-    }
-
-    function addBoard(w, h, d, x, y, z, mat, edgeMat) {
-        let geom = new THREE.BoxGeometry(w, Math.max(h, 0.1), Math.max(d, 0.1));
-        let mesh = new THREE.Mesh(geom, mat);
-        let edges = new THREE.EdgesGeometry(geom);
-        mesh.add(new THREE.LineSegments(edges, edgeMat));
-        mesh.position.set(x, y, z);
-        group.add(mesh);
-    }
+    function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+    function addBoard(w, h, d, x, y, z, mat, edgeMat) { let geom = new THREE.BoxGeometry(w, Math.max(h, 0.1), Math.max(d, 0.1)); let mesh = new THREE.Mesh(geom, mat); let edges = new THREE.EdgesGeometry(geom); mesh.add(new THREE.LineSegments(edges, edgeMat)); mesh.position.set(x, y, z); group.add(mesh); }
 
     function render3D() {
         if (!group) return;
         while(group.children.length > 0) group.remove(group.children[0]); 
 
-        let s = cabinetState;
-        let p = s.parts;
+        let s = cabinetState; let p = s.parts;
+        const matB = new THREE.MeshLambertMaterial({ color: 0xe3d6c1 }); const matE = new THREE.LineBasicMaterial({ color: 0x9e8a6a, linewidth: 1 });
+        const matF = new THREE.MeshLambertMaterial({ color: 0x6184d8, transparent: true, opacity: 0.85 });
+
+        // UPROSZCZONY RENDER BAZY KORPUSU DLA WIDOKU
+        let l_t = p.left.type === 'brak' ? 0 : p.left.t;
+        let r_t = p.right.type === 'brak' ? 0 : p.right.t;
         
-        const matBoard = new THREE.MeshLambertMaterial({ color: 0xe3d6c1 }); 
-        const matEdge = new THREE.LineBasicMaterial({ color: 0x9e8a6a, linewidth: 1 });
-        const matFront = new THREE.MeshLambertMaterial({ color: 0x6184d8, transparent: true, opacity: 0.75 });
-        const matHdf = new THREE.MeshLambertMaterial({ color: 0xc1aa82 });
+        if (p.left.type !== 'brak') addBoard(l_t, s.box.h, s.box.d, -s.box.w/2 + l_t/2, s.box.h/2, s.box.d/2, matB, matE);
+        if (p.right.type !== 'brak') addBoard(r_t, s.box.h, s.box.d, s.box.w/2 - r_t/2, s.box.h/2, s.box.d/2, matB, matE);
+        if (p.top.type !== 'brak') addBoard(s.box.w - l_t - r_t, p.top.t, s.box.d, 0, s.box.h - p.top.t/2, s.box.d/2, matB, matE);
+        if (p.bot.type !== 'brak') addBoard(s.box.w - l_t - r_t, p.bot.t, s.box.d, 0, p.bot.t/2, s.box.d/2, matB, matE);
 
-        let l_t = (p.left.type === 'brak') ? 0 : p.left.t;
-        let r_t = (p.right.type === 'brak') ? 0 : p.right.t;
-        let top_t = (p.top.type === 'brak') ? 0 : p.top.t;
-        let bot_t = (p.bot.type === 'brak') ? 0 : p.bot.t;
-        let tr_depth = 100; // Trawers na 10cm
-
-        // --- BOK LEWY ---
-        if (p.left.type !== 'brak') {
-            let l_top_edge = s.box.h - ((p.top.connL === 'nakladany' && p.top.type !== 'brak') ? top_t : 0);
-            let l_bot_edge = 0 + ((p.bot.connL === 'nakladany' && p.bot.type !== 'brak') ? bot_t : 0);
-            let l_h = l_top_edge - l_bot_edge;
-            let l_y = l_bot_edge + l_h/2;
-            let l_d = s.box.d - p.left.frontOff - p.left.backOff;
-            let l_x = -s.box.w/2 + l_t/2;
-            let l_z = s.box.d - p.left.frontOff - l_d/2;
-            addBoard(l_t, l_h, l_d, l_x, l_y, l_z, matBoard, matEdge);
-        }
-
-        // --- BOK PRAWY ---
-        if (p.right.type !== 'brak') {
-            let r_top_edge = s.box.h - ((p.top.connR === 'nakladany' && p.top.type !== 'brak') ? top_t : 0);
-            let r_bot_edge = 0 + ((p.bot.connR === 'nakladany' && p.bot.type !== 'brak') ? bot_t : 0);
-            let r_h = r_top_edge - r_bot_edge;
-            let r_y = r_bot_edge + r_h/2;
-            let r_d = s.box.d - p.right.frontOff - p.right.backOff;
-            let r_x = s.box.w/2 - r_t/2;
-            let r_z = s.box.d - p.right.frontOff - r_d/2;
-            addBoard(r_t, r_h, r_d, r_x, r_y, r_z, matBoard, matEdge);
-        }
-
-        // --- WIENIEC GÓRNY / TRAWERSY ---
-        if (p.top.type !== 'brak') {
-            let t_xStart = -s.box.w/2 + (p.top.connL === 'wpuszczany' ? l_t : 0);
-            let t_xEnd = s.box.w/2 - (p.top.connR === 'wpuszczany' ? r_t : 0);
-            let t_w = t_xEnd - t_xStart;
-            let t_x = t_xStart + t_w/2;
-            let t_y = s.box.h - p.top.wpust - top_t/2;
-            
-            let t_front_edge = s.box.d - p.top.frontOff;
-            let t_back_edge = p.top.backOff;
-
-            if (p.top.type === 'wieniec') {
-                let t_d = t_front_edge - t_back_edge;
-                let t_z = t_front_edge - t_d/2;
-                addBoard(t_w, top_t, t_d, t_x, t_y, t_z, matBoard, matEdge);
-            } else if (p.top.type === '2_trawersy') {
-                addBoard(t_w, top_t, tr_depth, t_x, t_y, t_front_edge - tr_depth/2, matBoard, matEdge);
-                addBoard(t_w, top_t, tr_depth, t_x, t_y, t_back_edge + tr_depth/2, matBoard, matEdge);
-            } else if (p.top.type === '1_przod' || p.top.type === 'listwa') {
-                addBoard(t_w, top_t, tr_depth, t_x, t_y, t_front_edge - tr_depth/2, matBoard, matEdge);
-            } else if (p.top.type === '1_tyl') {
-                addBoard(t_w, top_t, tr_depth, t_x, t_y, t_back_edge + tr_depth/2, matBoard, matEdge);
-            }
-        }
-
-        // --- WIENIEC DOLNY / TRAWERSY ---
-        if (p.bot.type !== 'brak') {
-            let b_xStart = -s.box.w/2 + (p.bot.connL === 'wpuszczany' ? l_t : 0);
-            let b_xEnd = s.box.w/2 - (p.bot.connR === 'wpuszczany' ? r_t : 0);
-            let b_w = b_xEnd - b_xStart;
-            let b_x = b_xStart + b_w/2;
-            let b_y = 0 + p.bot.wpust + bot_t/2;
-            
-            let b_front_edge = s.box.d - p.bot.frontOff;
-            let b_back_edge = p.bot.backOff;
-
-            if (p.bot.type === 'wieniec') {
-                let b_d = b_front_edge - b_back_edge;
-                let b_z = b_front_edge - b_d/2;
-                addBoard(b_w, bot_t, b_d, b_x, b_y, b_z, matBoard, matEdge);
-            } else if (p.bot.type === '2_trawersy') {
-                addBoard(b_w, bot_t, tr_depth, b_x, b_y, b_front_edge - tr_depth/2, matBoard, matEdge);
-                addBoard(b_w, bot_t, tr_depth, b_x, b_y, b_back_edge + tr_depth/2, matBoard, matEdge);
-            } else if (p.bot.type === '1_przod') {
-                addBoard(b_w, bot_t, tr_depth, b_x, b_y, b_front_edge - tr_depth/2, matBoard, matEdge);
-            } else if (p.bot.type === '1_tyl') {
-                addBoard(b_w, bot_t, tr_depth, b_x, b_y, b_back_edge + tr_depth/2, matBoard, matEdge);
-            }
-        }
-
-        // --- ŚCIANKA TYLNA ---
-        let bk_w = s.box.w;
-        let bk_h = s.box.h;
-        let bk_z = 0;
-        
-        if (p.back.type === 'nut') {
-            bk_w = s.box.w - l_t - r_t + 12; // Wchodzi w boki na 6mm
-            bk_h = s.box.h - top_t - bot_t - p.top.wpust - p.bot.wpust + 12; // Wchodzi w wieńce na 6mm
-            bk_z = p.back.zOff + p.back.t/2;
-        } else {
-            bk_z = -p.back.t/2;
-        }
-        addBoard(bk_w, bk_h, p.back.t, 0, s.box.h/2, bk_z, matHdf, matEdge);
-
-        // --- FRONTY ---
-        if (s.fronts.output && s.fronts.output.length > 0) {
-            let frontW = s.box.w - s.gaps.l - s.gaps.r;
+        // FRONTY 3D Z INDYWIDUALNYCH ELEMENTÓW
+        if (s.fronts.items.length > 0) {
             let frontX = 0 + (s.gaps.l / 2) - (s.gaps.r / 2); 
             let frontZ = s.box.d + (s.fronts.t / 2) + 1; 
             let currentTopY = s.box.h - s.gaps.t;
 
             if (s.fronts.overlay === 'wpuszczany') {
-                frontW = s.box.w - l_t - r_t - s.gaps.l - s.gaps.r;
-                frontX = 0; 
-                frontZ = s.box.d - (s.fronts.t / 2);
-                currentTopY = s.box.h - top_t - p.top.wpust - s.gaps.t;
+                frontX = 0; frontZ = s.box.d - (s.fronts.t / 2); currentTopY = s.box.h - p.top.t - s.gaps.t;
             }
 
-            s.fronts.output.forEach(fh => {
-                let frontY = currentTopY - (fh / 2);
-                addBoard(frontW, fh, s.fronts.t, frontX, frontY, frontZ, matFront, matEdge);
-                currentTopY -= (fh + s.gaps.f); 
+            s.fronts.items.forEach(f => {
+                let frontY = currentTopY - (f.h / 2);
+                addBoard(f.w, f.h, s.fronts.t, frontX, frontY, frontZ, matF, matE);
+                currentTopY -= (f.h + s.gaps.f); 
             });
         }
     }
 
-    // START
-    window.onload = () => {
-        init3D();
-        updateDepth('bok'); 
-    };
+    window.onload = () => { init3D(); updateDepth('bok'); };
 </script>
 </body>
 </html>
