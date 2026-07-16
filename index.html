@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klon e-SERVICES - Pełny Krok 2 (Korpus + Fronty)</title>
+    <title>Klon e-SERVICES - Pełny Kod</title>
     <style>
         /* BAZOWY UKŁAD WZOROWANY NA BLUM */
         :root { --blum-orange: #f25f22; --bg-main: #f2f2f2; --panel-bg: #ffffff; --text-main: #333; --border-color: #e0e0e0; }
@@ -15,7 +15,7 @@
         .project-name { font-size: 0.9rem; font-weight: bold; color: #555; margin: 0 auto; }
 
         /* LEWY PANEL (Kategorie) */
-        .sidebar-left { width: 260px; background: var(--panel-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; z-index: 10; }
+        .sidebar-left { width: 260px; background: var(--panel-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; height: calc(100vh - 50px); z-index: 10; }
         .nav-menu { list-style: none; padding: 0; margin: 0; }
         .nav-item { border-bottom: 1px solid var(--border-color); }
         .nav-btn { width: 100%; text-align: left; padding: 15px 20px; background: none; border: none; font-size: 0.95rem; color: #555; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
@@ -28,14 +28,14 @@
         .tool-btn:hover { background: #fff5f0; }
 
         /* OBSZAR ROBOCZY 3D/2D */
-        .workspace { flex: 1; margin-top: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .workspace { flex: 1; margin-top: 50px; height: calc(100vh - 50px); position: relative; display: flex; justify-content: center; align-items: center; }
         #canvas-container { width: 100%; height: 100%; }
         .view-controls { position: absolute; top: 15px; right: 15px; display: flex; border-radius: 4px; overflow: hidden; border: 1px solid #ccc; background: #fff; }
         .view-controls button { border: none; padding: 8px 15px; background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: #555; }
         .view-controls button.active { background: #e0e0e0; }
 
         /* PRAWY PANEL 1:1 BLUM */
-        .sidebar-right { width: 360px; background: var(--panel-bg); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; z-index: 10; box-shadow: -2px 0 5px rgba(0,0,0,0.02); }
+        .sidebar-right { width: 360px; background: var(--panel-bg); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; height: calc(100vh - 50px); z-index: 10; box-shadow: -2px 0 5px rgba(0,0,0,0.02); }
         .right-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); color: #555; font-weight: 600; font-size: 0.95rem; text-transform: uppercase; background: #fff; }
         .right-header .star { color: var(--blum-orange); font-size: 1.2rem; cursor: pointer; background: none; border: none; padding: 0; outline: none; }
         .right-scroll-area { flex: 1; overflow-y: auto; }
@@ -56,7 +56,12 @@
         .blum-row label { color: #555; flex: 1; font-size: 0.85rem; }
         .blum-row input[type="number"], .blum-row input[type="text"], .blum-row select { width: 110px; padding: 5px 8px; border: 1px solid #aaa; border-radius: 2px; text-align: right; color: #333; font-family: inherit; font-size: 0.85rem; box-sizing: border-box; }
         .blum-row input:focus, .blum-row select:focus { outline: none; border-color: var(--blum-orange); box-shadow: 0 0 0 1px rgba(242,95,34,0.3); }
+        /* ZAKŁADKI GŁÓWNE - Zmiana z block na flex, aby scroll działał wewnątrz */
+        .tab-content { display: none; flex-direction: column; height: 100%; }
+        .tab-content.active { display: flex; }
         
+        /* OBSZAR SCROLLOWANIA - Dodano dolny margines dla wygody */
+        .right-scroll-area { flex: 1; overflow-y: auto; padding-bottom: 30px; }
         /* Ukrywanie strzałek w input number */
         .blum-row input[type=number]::-webkit-inner-spin-button, 
         .blum-row input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -99,14 +104,13 @@
                 </div>
             </li>
             <li class="nav-item"><button class="nav-btn">Konstrukcja wewnętrzna <span style="color:#aaa;">›</span></button></li>
-            <li class="nav-item"><button class="nav-btn">Ścianki tylne <span style="color:#aaa;">›</span></button></li>
             <li class="nav-item"><button class="nav-btn">Okucia <span style="color:#aaa;">›</span></button></li>
         </ul>
     </div>
 
     <div class="workspace">
         <div class="view-controls">
-            <button class="active">przód</button>
+            <button class="active">przód (3D)</button>
         </div>
         <div id="canvas-container"></div>
     </div>
@@ -127,16 +131,10 @@
                     
                     <div class="blum-readonly" style="margin-top:10px;"><label>Wysokość wewnętrzna</label><span id="in_h">684</span></div>
                     <div class="blum-readonly"><label>Szerokość wewnętrzna</label><span id="in_w">564</span></div>
-                    <div class="blum-readonly"><label>Głębokość wewnętrzna</label><span id="in_d">495</span></div>
+                    <div class="blum-readonly"><label>Głębokość wewnętrzna</label><span id="in_d">490</span></div>
                     
                     <div class="blum-row"><label>Grubość płyty ogólnie</label><input type="number" id="cab_t" value="18" onchange="updateState()"></div>
                     
-                    <div class="blum-row" style="display:none;">
-                        <label>Typ Pleców</label>
-                        <select id="back_type" onchange="updateDepth('bok')"><option value="nut">Wpuszczane</option><option value="nakladane">Nakładane</option></select>
-                    </div>
-                    <div class="blum-row" style="display:none;"><label>Gr. Pleców</label><input type="number" id="back_t" value="3" onchange="updateDepth('bok')"></div>
-
                     <div class="spacer"></div>
                     <div class="blum-row"><label>Szczelina górna</label><input type="number" id="gap_t" value="8" onchange="updateState()"></div>
                     <div class="blum-row"><label>Szczelina dolna</label><input type="number" id="gap_b" value="0" onchange="updateState()"></div>
@@ -148,55 +146,77 @@
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Wieniec górny</div>
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label>
-                        <select><option>Wieniec górny</option><option>Listwa przednia</option></select>
+                        <select id="top_type" onchange="updateState()">
+                            <option value="wieniec">Wieniec górny</option>
+                            <option value="2_trawersy">2 trawersy</option>
+                            <option value="1_przod">1 trawers z przodu</option>
+                            <option value="1_tyl">1 trawers z tyłu</option>
+                            <option value="brak">Brak wieńca górnego</option>
+                        </select>
                     </div>
-                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
-                    <div class="blum-row"><label>Łącznik profili lewy</label>
-                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    <div class="blum-row"><label>Grubość</label><input type="number" id="top_t" value="18" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Łącznik lewy</label>
+                        <select id="top_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
                     </div>
-                    <div class="blum-row"><label>Łącznik profili prawy</label>
-                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    <div class="blum-row"><label>Łącznik prawy</label>
+                        <select id="top_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
                     </div>
-                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" value="0"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="top_front_off" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="top_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Wieniec dolny</div>
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label>
-                        <select><option>Wieniec dolny</option></select>
+                        <select id="bot_type" onchange="updateState()">
+                            <option value="wieniec">Wieniec dolny</option>
+                            <option value="2_trawersy">2 trawersy</option>
+                            <option value="1_przod">1 trawers z przodu</option>
+                            <option value="1_tyl">1 trawers z tyłu</option>
+                            <option value="brak">Brak wieńca dolnego</option>
+                        </select>
                     </div>
-                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
-                    <div class="blum-row"><label>Łącznik profili lewy</label>
-                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    <div class="blum-row"><label>Grubość</label><input type="number" id="bot_t" value="18" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Łącznik lewy</label>
+                        <select id="bot_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
                     </div>
-                    <div class="blum-row"><label>Łącznik profili prawy</label>
-                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    <div class="blum-row"><label>Łącznik prawy</label>
+                        <select id="bot_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
                     </div>
-                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" value="0"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="bot_front_off" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="bot_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Lewa strona korpusu</div>
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label>
-                        <select><option>Bok korpusu</option></select>
+                        <select id="left_type" onchange="updateState()"><option value="bok">Bok korpusu</option></select>
                     </div>
-                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Grubość</label><input type="number" id="left_t" value="18" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="left_front_off" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="left_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Prawa strona korpusu</div>
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label>
-                        <select><option>Bok korpusu</option></select>
+                        <select id="right_type" onchange="updateState()"><option value="bok">Bok korpusu</option></select>
                     </div>
-                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
-                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
-                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Grubość</label><input type="number" id="right_t" value="18" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="right_front_off" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="right_back_off" value="0" onchange="updateState()"></div>
+                </div>
+
+                <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ścianka tylna</div>
+                <div class="r-acc-content">
+                    <div class="blum-row"><label>Typ ścianki</label>
+                        <select id="back_type" onchange="updateDepth('bok')">
+                            <option value="nut">Wpuszczana (Nut)</option>
+                            <option value="nakladana">Nakładana</option>
+                        </select>
+                    </div>
+                    <div class="blum-row"><label>Grubość HDF</label><input type="number" id="back_t" value="3" onchange="updateDepth('bok')"></div>
+                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="back_z" value="20" onchange="updateState()"></div>
                 </div>
 
             </div>
@@ -227,6 +247,8 @@
             </div>
         </div>
 
+        <div id="tab-wewnatrz" class="tab-content"><div class="right-header">KONSTR. WEWNĘTRZNA <button class="star">☆</button></div></div>
+        <div id="tab-okucia" class="tab-content"><div class="right-header">OKUCIA I NAWIERTY <button class="star">☆</button></div></div>
     </div>
 
 <script>
@@ -238,7 +260,6 @@
         else { el.classList.add('active'); content.classList.add('active'); }
     }
 
-    // --- ZMIANA ZAKŁADEK GŁÓWNYCH ---
     function switchMainTab(tabId) {
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('btn-' + tabId).classList.add('active');
@@ -256,17 +277,14 @@
         document.getElementById('front_formula').select();
     }
 
-    // --- KALKULATOR GŁĘBOKOŚCI CAŁKOWITEJ/BOKU ---
+    // --- KALKULATOR GŁĘBOKOŚCI ---
     function updateDepth(source) {
         let tFront = parseFloat(document.getElementById('front_t').value) || 18;
         let tPlecy = parseFloat(document.getElementById('back_t').value) || 3;
         let backType = document.getElementById('back_type').value;
 
-        // Ile dodajemy do płyty boku, żeby uzyskać wymiar całej wnęki ze ścianą
         let extraDepth = tFront;
-        if (backType === 'nakladane') {
-            extraDepth += tPlecy;
-        }
+        if (backType === 'nakladana') { extraDepth += tPlecy; }
 
         if (source === 'bok') {
             let dBox = parseFloat(document.getElementById('cab_d').value) || 510;
@@ -276,23 +294,19 @@
             let total = parseFloat(document.getElementById('cab_total_d').value) || 528;
             document.getElementById('cab_d').value = total - extraDepth;
         }
-        
-        // Zawsze na koniec przeliczamy i aktualizujemy model 3D
         updateState();
     }
 
-    // --- PARSER WZORU BLUM (TOP-DOWN) ---
+    // --- PARSER WZORU BLUM ---
     function parseBlumFormula(formulaStr, totalSpace, gapSize) {
         if (!formulaStr) return [];
         let s = formulaStr.replace(/\s+/g, '').toLowerCase();
 
-        // 1. Równe podziały (np. "3")
         if (/^\d+$/.test(s)) {
             let c = parseInt(s);
             if (c > 0 && c <= 15) return Array(c).fill((totalSpace - (c - 1) * gapSize) / c);
         }
 
-        // 2. Proporcje (np. "1:2:2")
         if (s.includes(':')) {
             let p = s.split(':').map(Number);
             if (p.every(n => !isNaN(n) && n > 0)) {
@@ -302,7 +316,6 @@
             }
         }
 
-        // 3. Wartości stałe i gwiazdka (np. "140;*;200")
         let splitReg = /[,;+]/;
         if (splitReg.test(s) || s.includes('*')) {
             let tokens = s.split(splitReg);
@@ -326,54 +339,86 @@
 
     // --- GLOBALNY STAN KORPUSU ---
     let cabinetState = {
-        box: { h: 720, w: 600, d: 510, t: 18 },
+        box: { h: 720, w: 600, d: 510 },
         gaps: { t: 8, b: 0, l: 2, r: 2, f: 3 },
+        parts: {
+            top: { type: 'wieniec', t: 18, frontOff: 0, backOff: 0, connL: 'wpuszczany', connR: 'wpuszczany' },
+            bot: { type: 'wieniec', t: 18, frontOff: 0, backOff: 0, connL: 'wpuszczany', connR: 'wpuszczany' },
+            left: { type: 'bok', t: 18, frontOff: 0, backOff: 0 },
+            right: { type: 'bok', t: 18, frontOff: 0, backOff: 0 },
+            back: { type: 'nut', t: 3, zOff: 20 }
+        },
         fronts: { t: 18, overlay: 'nakladany', formula: '3', output: [] }
     };
 
     function updateState() {
         let s = cabinetState;
+        let p = s.parts;
         
-        // Zczytanie danych korpusu
         s.box.h = parseFloat(document.getElementById('cab_h').value) || 720;
         s.box.w = parseFloat(document.getElementById('cab_w').value) || 600;
         s.box.d = parseFloat(document.getElementById('cab_d').value) || 510;
-        s.box.t = parseFloat(document.getElementById('cab_t').value) || 18;
         
-        // Zczytanie szczelin
         s.gaps.t = parseFloat(document.getElementById('gap_t').value) || 0;
         s.gaps.b = parseFloat(document.getElementById('gap_b').value) || 0;
         s.gaps.l = parseFloat(document.getElementById('gap_l').value) || 0;
         s.gaps.r = parseFloat(document.getElementById('gap_r').value) || 0;
         s.gaps.f = parseFloat(document.getElementById('gap_f').value) || 0;
 
-        // Wymiary wewnętrzne
-        let wewH = s.box.h - (s.box.t * 2);
-        let wewW = s.box.w - (s.box.t * 2);
-        let backType = document.getElementById('back_type').value;
-        let wewD = s.box.d - (backType === 'nut' ? 15 : 0); // Odejmujemy 15mm na nut, przy nakładanych wnętrze = cały bok
+        p.top.type = document.getElementById('top_type').value;
+        p.top.t = parseFloat(document.getElementById('top_t').value) || 18;
+        p.top.connL = document.getElementById('top_conn_l').value;
+        p.top.connR = document.getElementById('top_conn_r').value;
+        p.top.frontOff = parseFloat(document.getElementById('top_front_off').value) || 0;
+        p.top.backOff = parseFloat(document.getElementById('top_back_off').value) || 0;
+
+        p.bot.type = document.getElementById('bot_type').value;
+        p.bot.t = parseFloat(document.getElementById('bot_t').value) || 18;
+        p.bot.connL = document.getElementById('bot_conn_l').value;
+        p.bot.connR = document.getElementById('bot_conn_r').value;
+        p.bot.frontOff = parseFloat(document.getElementById('bot_front_off').value) || 0;
+        p.bot.backOff = parseFloat(document.getElementById('bot_back_off').value) || 0;
+
+        p.left.t = parseFloat(document.getElementById('left_t').value) || 18;
+        p.left.frontOff = parseFloat(document.getElementById('left_front_off').value) || 0;
+        p.left.backOff = parseFloat(document.getElementById('left_back_off').value) || 0;
+        
+        p.right.t = parseFloat(document.getElementById('right_t').value) || 18;
+        p.right.frontOff = parseFloat(document.getElementById('right_front_off').value) || 0;
+        p.right.backOff = parseFloat(document.getElementById('right_back_off').value) || 0;
+
+        p.back.type = document.getElementById('back_type').value;
+        p.back.t = parseFloat(document.getElementById('back_t').value) || 3;
+        p.back.zOff = parseFloat(document.getElementById('back_z').value) || 0;
+
+        // Wymiary wewnętrzne HTML update - Poprawka logiczna
+        let topT_calc = (p.top.type === 'brak') ? 0 : p.top.t;
+        let botT_calc = (p.bot.type === 'brak') ? 0 : p.bot.t;
+
+        let wewH = s.box.h - topT_calc - botT_calc;
+        let wewW = s.box.w - p.left.t - p.right.t;
+        let wewD = s.box.d - (p.back.type === 'nut' ? p.back.zOff : 0);
         
         document.getElementById('in_h').innerText = wewH;
         document.getElementById('in_w').innerText = wewW;
         document.getElementById('in_d').innerText = wewD;
 
-        // Zczytanie Frontów
         s.fronts.t = parseFloat(document.getElementById('front_t').value) || 18;
         s.fronts.overlay = document.getElementById('front_overlay').value;
         s.fronts.formula = document.getElementById('front_formula').value;
 
-        // Przeliczenie podziału frontów (TOP-DOWN)
+        // Obliczanie podziału frontów
         let totalFrontSpaceH = s.box.h - s.gaps.t - s.gaps.b;
         if (s.fronts.overlay === 'wpuszczany') {
-            totalFrontSpaceH = s.box.h - (2 * s.box.t) - s.gaps.t - s.gaps.b;
+            totalFrontSpaceH = s.box.h - topT_calc - botT_calc - s.gaps.t - s.gaps.b;
         }
         
         s.fronts.output = parseBlumFormula(s.fronts.formula, totalFrontSpaceH, s.gaps.f);
 
-        // Wygenerowanie listy frontów w HTML
+        // Wygenerowanie listy frontów
         let listHtml = '';
         let frontW = s.box.w - s.gaps.l - s.gaps.r;
-        if (s.fronts.overlay === 'wpuszczany') frontW = s.box.w - (2 * s.box.t) - s.gaps.l - s.gaps.r;
+        if (s.fronts.overlay === 'wpuszczany') frontW = s.box.w - p.left.t - p.right.t - s.gaps.l - s.gaps.r;
 
         if(s.fronts.output && s.fronts.output.length > 0) {
             s.fronts.output.forEach((h, index) => {
@@ -389,7 +434,6 @@
         }
         document.getElementById('fronts-list-container').innerHTML = listHtml;
 
-        // Odświeżenie widoku 3D
         render3D();
     }
 
@@ -449,20 +493,90 @@
         while(group.children.length > 0) group.remove(group.children[0]); 
 
         let s = cabinetState;
+        let p = s.parts;
         
         const matBoard = new THREE.MeshLambertMaterial({ color: 0xe3d6c1 }); 
         const matEdge = new THREE.LineBasicMaterial({ color: 0x9e8a6a, linewidth: 1 });
         const matFront = new THREE.MeshLambertMaterial({ color: 0x6184d8, transparent: true, opacity: 0.75 });
+        const matHdf = new THREE.MeshLambertMaterial({ color: 0xc1aa82 });
 
-        // --- BOKI KORPUSU ---
-        let sideH = s.box.h;
-        addBoard(s.box.t, sideH, s.box.d, -s.box.w/2 + s.box.t/2, sideH/2, s.box.d/2, matBoard, matEdge); 
-        addBoard(s.box.t, sideH, s.box.d, s.box.w/2 - s.box.t/2, sideH/2, s.box.d/2, matBoard, matEdge);
+        let tr_depth = 100; // Standardowa szerokość trawersu
 
-        // --- WIEŃCE KORPUSU ---
-        let wienW = s.box.w - 2*s.box.t;
-        addBoard(wienW, s.box.t, s.box.d, 0, s.box.t/2, s.box.d/2, matBoard, matEdge); // Dół
-        addBoard(wienW, s.box.t, s.box.d, 0, s.box.h - s.box.t/2, s.box.d/2, matBoard, matEdge); // Góra
+        // --- BOK LEWY ---
+        let l_h = s.box.h; 
+        let l_d = s.box.d - p.left.frontOff - p.left.backOff;
+        let l_x = -s.box.w/2 + p.left.t/2;
+        let l_z = s.box.d - p.left.frontOff - l_d/2;
+        addBoard(p.left.t, l_h, l_d, l_x, l_h/2, l_z, matBoard, matEdge);
+
+        // --- BOK PRAWY ---
+        let r_h = s.box.h;
+        let r_d = s.box.d - p.right.frontOff - p.right.backOff;
+        let r_x = s.box.w/2 - p.right.t/2;
+        let r_z = s.box.d - p.right.frontOff - r_d/2;
+        addBoard(p.right.t, r_h, r_d, r_x, r_h/2, r_z, matBoard, matEdge);
+
+        // --- WIENIEC GÓRNY / TRAWERSY ---
+        let t_xStart = -s.box.w/2 + (p.top.connL === 'wpuszczany' ? p.left.t : 0);
+        let t_xEnd = s.box.w/2 - (p.top.connR === 'wpuszczany' ? p.right.t : 0);
+        let t_w = t_xEnd - t_xStart;
+        let t_x = (t_xStart + t_xEnd) / 2;
+        let t_y = s.box.h - p.top.t/2;
+        
+        let t_front_edge = s.box.d - p.top.frontOff;
+        let t_back_edge = p.top.backOff;
+
+        if (p.top.type === 'wieniec') {
+            let t_d = t_front_edge - t_back_edge;
+            let t_z = t_front_edge - t_d/2;
+            addBoard(t_w, p.top.t, t_d, t_x, t_y, t_z, matBoard, matEdge);
+        } else if (p.top.type === '2_trawersy') {
+            addBoard(t_w, p.top.t, tr_depth, t_x, t_y, t_front_edge - tr_depth/2, matBoard, matEdge);
+            addBoard(t_w, p.top.t, tr_depth, t_x, t_y, t_back_edge + tr_depth/2, matBoard, matEdge);
+        } else if (p.top.type === '1_przod' || p.top.type === 'listwa') {
+            addBoard(t_w, p.top.t, tr_depth, t_x, t_y, t_front_edge - tr_depth/2, matBoard, matEdge);
+        } else if (p.top.type === '1_tyl') {
+            addBoard(t_w, p.top.t, tr_depth, t_x, t_y, t_back_edge + tr_depth/2, matBoard, matEdge);
+        }
+
+        // --- WIENIEC DOLNY / TRAWERSY ---
+        let b_xStart = -s.box.w/2 + (p.bot.connL === 'wpuszczany' ? p.left.t : 0);
+        let b_xEnd = s.box.w/2 - (p.bot.connR === 'wpuszczany' ? p.right.t : 0);
+        let b_w = b_xEnd - b_xStart;
+        let b_x = (b_xStart + b_xEnd) / 2;
+        let b_y = p.bot.t/2;
+        
+        let b_front_edge = s.box.d - p.bot.frontOff;
+        let b_back_edge = p.bot.backOff;
+
+        if (p.bot.type === 'wieniec') {
+            let b_d = b_front_edge - b_back_edge;
+            let b_z = b_front_edge - b_d/2;
+            addBoard(b_w, p.bot.t, b_d, b_x, b_y, b_z, matBoard, matEdge);
+        } else if (p.bot.type === '2_trawersy') {
+            addBoard(b_w, p.bot.t, tr_depth, b_x, b_y, b_front_edge - tr_depth/2, matBoard, matEdge);
+            addBoard(b_w, p.bot.t, tr_depth, b_x, b_y, b_back_edge + tr_depth/2, matBoard, matEdge);
+        } else if (p.bot.type === '1_przod') {
+            addBoard(b_w, p.bot.t, tr_depth, b_x, b_y, b_front_edge - tr_depth/2, matBoard, matEdge);
+        } else if (p.bot.type === '1_tyl') {
+            addBoard(b_w, p.bot.t, tr_depth, b_x, b_y, b_back_edge + tr_depth/2, matBoard, matEdge);
+        }
+
+        // --- ŚCIANKA TYLNA ---
+        let bk_w = s.box.w;
+        let bk_h = s.box.h;
+        let bk_z = 0;
+        
+        if (p.back.type === 'nut') {
+            bk_w = s.box.w - p.left.t - p.right.t + 12; // Wchodzi w boki na 6mm
+            let topT_calc = (p.top.type === 'brak') ? 0 : p.top.t;
+            let botT_calc = (p.bot.type === 'brak') ? 0 : p.bot.t;
+            bk_h = s.box.h - topT_calc - botT_calc + 12; // Wchodzi w wieńce na 6mm
+            bk_z = p.back.zOff + p.back.t/2;
+        } else {
+            bk_z = -p.back.t/2;
+        }
+        addBoard(bk_w, bk_h, p.back.t, 0, s.box.h/2, bk_z, matHdf, matEdge);
 
         // --- FRONTY ---
         if (s.fronts.output && s.fronts.output.length > 0) {
@@ -471,11 +585,12 @@
             let frontZ = s.box.d + (s.fronts.t / 2) + 1; 
             let currentTopY = s.box.h - s.gaps.t;
 
+            let topT_calc = (p.top.type === 'brak') ? 0 : p.top.t;
             if (s.fronts.overlay === 'wpuszczany') {
-                frontW = s.box.w - (2 * s.box.t) - s.gaps.l - s.gaps.r;
+                frontW = s.box.w - p.left.t - p.right.t - s.gaps.l - s.gaps.r;
                 frontX = 0; 
                 frontZ = s.box.d - (s.fronts.t / 2);
-                currentTopY = s.box.h - s.box.t - s.gaps.t;
+                currentTopY = s.box.h - topT_calc - s.gaps.t;
             }
 
             s.fronts.output.forEach(fh => {
