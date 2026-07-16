@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klon e-SERVICES - Zaawansowana Geometria Korpusu</title>
+    <title>Klon e-SERVICES - Zaawansowany Podział Frontów</title>
     <style>
         /* BAZOWY UKŁAD WZOROWANY NA BLUM */
         :root { --blum-orange: #f25f22; --bg-main: #f2f2f2; --panel-bg: #ffffff; --text-main: #333; --border-color: #e0e0e0; }
@@ -24,8 +24,9 @@
 
         /* SUB-NARZĘDZIA W LEWYM PANELU */
         .sub-tools { display: none; padding: 15px; background: #fafafa; border-top: 1px solid #eee; }
-        .tool-btn { width: 100%; padding: 10px; border: 1px dashed var(--blum-orange); background: #fff; color: var(--blum-orange); cursor: pointer; border-radius: 2px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .tool-btn:hover { background: #fff5f0; }
+        .tool-btn { width: 100%; padding: 10px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; border-radius: 2px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .tool-btn:hover { background: #fdfdfd; border-color: var(--blum-orange); color: var(--blum-orange); }
+        .tool-icon { width: 18px; height: 18px; background: linear-gradient(to bottom, var(--blum-orange) 45%, #fff 45%, #fff 55%, var(--blum-orange) 55%); outline: 1px solid var(--blum-orange); }
 
         /* OBSZAR ROBOCZY 3D/2D */
         .workspace { flex: 1; margin-top: 50px; height: calc(100vh - 50px); position: relative; display: flex; justify-content: center; align-items: center; }
@@ -71,7 +72,34 @@
         .front-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; border-bottom: 1px solid #eee; font-size: 0.85rem; color: #555; background: #fff; }
         .front-list-item .name { color: var(--blum-orange); font-weight: bold; }
         .front-list-item .dim { font-weight: bold; color: #333; }
-        .formula-input { width: 100% !important; text-align: center !important; font-weight: bold; color: var(--blum-orange) !important; background: #fff5f0; border-color: var(--blum-orange) !important; }
+
+        /* --- MODAL (PODZIAŁ FRONTÓW) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-box { background: #fff; width: 750px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
+        .modal-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; font-weight: normal; }
+        .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--blum-orange); font-weight: bold; }
+        .modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+        .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; background: #fafafa; text-align: right; }
+        
+        .btn-primary { background: var(--blum-orange); color: white; border: none; padding: 8px 25px; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+        .btn-primary:hover { background: #e0531b; }
+
+        .m-input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; }
+        .m-input-row label { font-size: 0.9rem; color: #555; }
+        .m-input-row input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 2px; font-size: 1rem; color: var(--text-main); font-weight: bold; }
+        .m-input-row input:focus { border-color: var(--blum-orange); outline: none; }
+
+        .m-acc-header { padding: 12px 0; border-bottom: 1px solid #eee; cursor: pointer; color: #333; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .m-acc-header:hover { color: var(--blum-orange); }
+        .m-acc-caret { color: var(--blum-orange); font-family: monospace; font-size: 1.2rem; font-weight: bold; transition: transform 0.2s; display: inline-block; width: 15px; text-align: center; }
+        .m-acc-header.active .m-acc-caret { transform: rotate(90deg); }
+        .m-acc-content { padding: 20px 10px; display: none; }
+        .m-acc-content.active { display: block; }
+
+        /* Ilustracje szuflad w modalu */
+        .illu-box { width: 140px; height: 180px; display: flex; flex-direction: column; gap: 2px; border-left: 1px solid #ccc; border-right: 15px solid #e0e0e0; border-top: 6px solid #f0f0f0; background: #fff; padding: 2px; box-sizing: border-box; }
+        .illu-drawer { background: var(--blum-orange); display: flex; justify-content: center; align-items: center; color: #fff; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(0,0,0,0.1); width: 100%; }
     </style>
     <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -80,7 +108,7 @@
 
     <div class="top-navbar">
         <div class="logo-area">blum</div>
-        <div class="project-name">Nazwa korpusu: Zaawansowany Korpus (Wymiarowany)</div>
+        <div class="project-name">Nazwa korpusu: Zaawansowany Korpus</div>
     </div>
 
     <div class="sidebar-left">
@@ -91,9 +119,8 @@
             <li class="nav-item">
                 <button class="nav-btn" id="btn-fronty" onclick="switchMainTab('fronty')">Fronty <span style="color:#aaa;">›</span></button>
                 <div class="sub-tools" id="sub-tools-fronty">
-                    <button class="tool-btn" onclick="focusFrontFormula()">
-                        <div style="width:20px; height:20px; background:var(--blum-orange); border:1px solid #fff; outline:1px solid var(--blum-orange);"></div>
-                        Szczelina pozioma (Podział)
+                    <button class="tool-btn" onclick="openSplitModal()">
+                        <div class="tool-icon"></div> Szczelina pozioma (Podział)
                     </button>
                 </div>
             </li>
@@ -141,21 +168,13 @@
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label>
                         <select id="top_type" onchange="updateState()">
-                            <option value="wieniec">Wieniec górny</option>
-                            <option value="2_trawersy">2 trawersy</option>
-                            <option value="1_przod">1 trawers z przodu</option>
-                            <option value="1_tyl">1 trawers z tyłu</option>
-                            <option value="brak">Brak wieńca górnego</option>
+                            <option value="wieniec">Wieniec górny</option><option value="2_trawersy">2 trawersy</option><option value="1_przod">1 trawers z przodu</option><option value="1_tyl">1 trawers z tyłu</option><option value="brak">Brak wieńca górnego</option>
                         </select>
                     </div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="top_t" value="18" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Łącznik lewy</label>
-                        <select id="top_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
-                    </div>
-                    <div class="blum-row"><label>Łącznik prawy</label>
-                        <select id="top_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
-                    </div>
-                    <div class="blum-row"><label>Odległość wpustu (Z góry)</label><input type="number" id="top_wpust" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Łącznik lewy</label><select id="top_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
+                    <div class="blum-row"><label>Łącznik prawy</label><select id="top_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
+                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="top_wpust" value="0" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="top_front_off" value="0" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="top_back_off" value="0" onchange="updateState()"></div>
                 </div>
@@ -164,33 +183,20 @@
                 <div class="r-acc-content">
                     <div class="blum-row"><label>Konstrukcja</label>
                         <select id="bot_type" onchange="updateState()">
-                            <option value="wieniec">Wieniec dolny</option>
-                            <option value="2_trawersy">2 trawersy</option>
-                            <option value="1_przod">1 trawers z przodu</option>
-                            <option value="1_tyl">1 trawers z tyłu</option>
-                            <option value="brak">Brak wieńca dolnego</option>
+                            <option value="wieniec">Wieniec dolny</option><option value="2_trawersy">2 trawersy</option><option value="1_przod">1 trawers z przodu</option><option value="1_tyl">1 trawers z tyłu</option><option value="brak">Brak wieńca dolnego</option>
                         </select>
                     </div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="bot_t" value="18" onchange="updateState()"></div>
-                    <div class="blum-row"><label>Łącznik lewy</label>
-                        <select id="bot_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
-                    </div>
-                    <div class="blum-row"><label>Łącznik prawy</label>
-                        <select id="bot_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select>
-                    </div>
-                    <div class="blum-row"><label>Odległość wpustu (Z dołu)</label><input type="number" id="bot_wpust" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Łącznik lewy</label><select id="bot_conn_l" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
+                    <div class="blum-row"><label>Łącznik prawy</label><select id="bot_conn_r" onchange="updateState()"><option value="wpuszczany">wpuszczany</option><option value="nakladany">nakładany</option></select></div>
+                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="bot_wpust" value="0" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="bot_front_off" value="0" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="bot_back_off" value="0" onchange="updateState()"></div>
                 </div>
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Lewa strona korpusu</div>
                 <div class="r-acc-content">
-                    <div class="blum-row"><label>Konstrukcja</label>
-                        <select id="left_type" onchange="updateState()">
-                            <option value="bok">Bok korpusu</option>
-                            <option value="brak">Brak boku korpusu</option>
-                        </select>
-                    </div>
+                    <div class="blum-row"><label>Konstrukcja</label><select id="left_type" onchange="updateState()"><option value="bok">Bok korpusu</option><option value="brak">Brak boku</option></select></div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="left_t" value="18" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="left_front_off" value="0" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="left_back_off" value="0" onchange="updateState()"></div>
@@ -198,12 +204,7 @@
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Prawa strona korpusu</div>
                 <div class="r-acc-content">
-                    <div class="blum-row"><label>Konstrukcja</label>
-                        <select id="right_type" onchange="updateState()">
-                            <option value="bok">Bok korpusu</option>
-                            <option value="brak">Brak boku korpusu</option>
-                        </select>
-                    </div>
+                    <div class="blum-row"><label>Konstrukcja</label><select id="right_type" onchange="updateState()"><option value="bok">Bok korpusu</option><option value="brak">Brak boku</option></select></div>
                     <div class="blum-row"><label>Grubość</label><input type="number" id="right_t" value="18" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" id="right_front_off" value="0" onchange="updateState()"></div>
                     <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" id="right_back_off" value="0" onchange="updateState()"></div>
@@ -211,14 +212,9 @@
 
                 <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ścianka tylna</div>
                 <div class="r-acc-content">
-                    <div class="blum-row"><label>Typ ścianki</label>
-                        <select id="back_type" onchange="updateDepth('bok')">
-                            <option value="nut">Wpuszczana (Nut)</option>
-                            <option value="nakladana">Nakładana</option>
-                        </select>
-                    </div>
+                    <div class="blum-row"><label>Typ ścianki</label><select id="back_type" onchange="updateDepth('bok')"><option value="nut">Wpuszczana (Nut)</option><option value="nakladana">Nakładana</option></select></div>
                     <div class="blum-row"><label>Grubość HDF</label><input type="number" id="back_t" value="3" onchange="updateDepth('bok')"></div>
-                    <div class="blum-row"><label>Odległość wpustu (z tyłu)</label><input type="number" id="back_z" value="20" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" id="back_z" value="20" onchange="updateState()"></div>
                 </div>
 
             </div>
@@ -236,16 +232,9 @@
                             <option value="wpuszczany">wpuszczany</option>
                         </select>
                     </div>
-                    
-                    <div class="spacer"></div>
-                    <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px; font-weight:bold;">Podział poziomy (Wzór)</label>
-                    <div class="blum-row" style="margin-bottom: 15px;">
-                        <input type="text" id="front_formula" class="formula-input" value="3" onchange="updateState()" title="Wpisz np. 3, albo 140;*;200">
-                    </div>
-                    <div style="font-size: 0.75rem; color: #888; text-align: center; margin-top:-10px; margin-bottom:15px;">np. "3" (równe) lub "140; *; 280"</div>
                 </div>
                 
-                <div id="fronts-list-container"></div>
+                <div id="fronts-list-container" style="border-top:2px solid #eee;"></div>
             </div>
         </div>
 
@@ -253,9 +242,99 @@
         <div id="tab-okucia" class="main-tab"><div class="right-header">OKUCIA I NAWIERTY <button class="star">☆</button></div></div>
     </div>
 
+    <div class="modal-overlay" id="splitModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Podziel wysokość</h3>
+                <button class="modal-close" onclick="closeSplitModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="m-input-row">
+                    <label>Podział frontów lub ścianek tylnych: <span style="color:var(--blum-orange);">*</span></label>
+                    <input type="text" id="modal_formula" value="">
+                </div>
+                <p style="font-size:0.85rem; color:#666; margin-top:-15px; margin-bottom:20px;">Podział definiuje ilość i wysokość frontów lub ścianek tylnych.<br>Dostępne są następujące możliwości:</p>
+
+                <div class="m-acc-header active" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanowanie frontów lub ścianek tylnych równej wysokości</div>
+                <div class="m-acc-content active">
+                    <div style="display:flex; gap:20px;">
+                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
+                            Proszę podać wybraną ilość.<br><br>
+                            <b>Przykład:</b> Wpis: <span style="color:#000;">3</span><br><br>
+                            <b>Wynik:</b> 3 fronty lub ścianki tylne o równej wysokości.
+                        </div>
+                        <div class="illu-box">
+                            <div class="illu-drawer" style="height:33.3%;">1/3</div>
+                            <div class="illu-drawer" style="height:33.3%;">1/3</div>
+                            <div class="illu-drawer" style="height:33.3%;">1/3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="m-acc-header" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanuj z podziałem</div>
+                <div class="m-acc-content">
+                    <div style="display:flex; gap:20px;">
+                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
+                            Proszę podać wybrane udziały w systemie podziału.<br><br>
+                            <b>Przykład:</b> (Podział na 6) – wpis: <span style="color:#000;">3:2:1</span><br><br>
+                            <b>Wynik:</b> 3 fronty lub ścianki tylne o danych udziałach w podziale.
+                        </div>
+                        <div class="illu-box">
+                            <div class="illu-drawer" style="height:16.6%;">1/6</div>
+                            <div class="illu-drawer" style="height:33.3%;">2/6</div>
+                            <div class="illu-drawer" style="height:50%;">3/6</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="m-acc-header" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanuj z wartościami stałymi</div>
+                <div class="m-acc-content">
+                    <div style="display:flex; gap:20px;">
+                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
+                            Proszę podać wybrane wysokości frontów lub ścianek tylnych (w mm).<br><br>
+                            <b>Przykład:</b> Wpis: <span style="color:#000;">447:298:149</span><br><br>
+                            <b>Wynik:</b> 3 fronty lub ścianki tylne o wysokościach wprowadzonych w mm.
+                        </div>
+                        <div class="illu-box">
+                            <div class="illu-drawer" style="height:25%;">149</div>
+                            <div class="illu-drawer" style="height:35%;">298</div>
+                            <div class="illu-drawer" style="height:40%;">447</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="m-acc-header" onclick="toggleModalAcc(this)"><span class="m-acc-caret">></span> Zaplanuj z wartościami stałymi i pozostałymi</div>
+                <div class="m-acc-content">
+                    <div style="display:flex; gap:20px;">
+                        <div style="flex:1; font-size:0.85rem; color:#555; line-height:1.8;">
+                            Proszę podać wybrane wysokości frontów z wartościami stałymi. Wpisując `1` jako część pozostałą, automatycznie zostanie wyliczona wysokość.<br><br>
+                            <b>Przykład:</b> Wpis: <span style="color:#000;">1:149</span><br><br>
+                            <b>Wynik:</b> 2 fronty, z czego dolny to reszta z podziału, a górny ma 149 mm.
+                        </div>
+                        <div class="illu-box">
+                            <div class="illu-drawer" style="height:30%;">149</div>
+                            <div class="illu-drawer" style="height:70%;">1 (reszta)</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="applySplitModal()">Zastosuj</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // --- AKORDEONY UI ---
     function toggleRightAcc(el) {
+        let content = el.nextElementSibling;
+        let isActive = el.classList.contains('active');
+        if (isActive) { el.classList.remove('active'); content.classList.remove('active'); } 
+        else { el.classList.add('active'); content.classList.add('active'); }
+    }
+
+    function toggleModalAcc(el) {
         let content = el.nextElementSibling;
         let isActive = el.classList.contains('active');
         if (isActive) { el.classList.remove('active'); content.classList.remove('active'); } 
@@ -274,12 +353,26 @@
         if(subTool) subTool.style.display = 'block';
     }
 
-    function focusFrontFormula() {
-        document.getElementById('front_formula').focus();
-        document.getElementById('front_formula').select();
+    // --- LOGIKA MODALU PODZIAŁU ---
+    function openSplitModal() {
+        document.getElementById('modal_formula').value = cabinetState.fronts.formula;
+        document.getElementById('splitModal').style.display = 'flex';
+        document.getElementById('modal_formula').focus();
+        document.getElementById('modal_formula').select();
+    }
+    
+    function closeSplitModal() {
+        document.getElementById('splitModal').style.display = 'none';
     }
 
-    // --- KALKULATOR GŁĘBOKOŚCI CAŁKOWITEJ ---
+    function applySplitModal() {
+        let val = document.getElementById('modal_formula').value;
+        cabinetState.fronts.formula = val;
+        closeSplitModal();
+        updateState(); // Odśwież widok z nowym podziałem
+    }
+
+    // --- KALKULATOR GŁĘBOKOŚCI ---
     function updateDepth(source) {
         let tFront = parseFloat(document.getElementById('front_t').value) || 18;
         let tPlecy = parseFloat(document.getElementById('back_t').value) || 3;
@@ -299,44 +392,72 @@
         updateState();
     }
 
-    // --- PARSER WZORU BLUM ---
+    // --- PARSER WZORU BLUM (ZAAWANSOWANE PROPORCJE I WARTOŚCI STAŁE) ---
     function parseBlumFormula(formulaStr, totalSpace, gapSize) {
         if (!formulaStr) return [];
         let s = formulaStr.replace(/\s+/g, '').toLowerCase();
 
+        // 1. Zwykła cyfra (np. "3" -> 3 równe fronty)
         if (/^\d+$/.test(s)) {
             let c = parseInt(s);
             if (c > 0 && c <= 15) return Array(c).fill((totalSpace - (c - 1) * gapSize) / c);
         }
 
-        if (s.includes(':')) {
-            let p = s.split(':').map(Number);
-            if (p.every(n => !isNaN(n) && n > 0)) {
-                let sum = p.reduce((a, b) => a + b, 0);
-                let avail = totalSpace - (p.length - 1) * gapSize;
-                return p.map(n => avail * (n / sum));
-            }
-        }
+        // Dzielimy ciąg po dwukropkach, średnikach, przecinkach lub plusach
+        let tokens = s.split(/[:;,+]/).filter(t => t !== '');
+        
+        // Sprawdzamy, czy w formule są jakieś "duże" wymiary (powyżej 20 mm).
+        // Minimalny front to ok. 50mm, więc wszystko poniżej 20 traktujemy jako "udział/proporcję".
+        let hasLargeNumbers = tokens.some(t => parseFloat(t) >= 20);
+        
+        let fixedSum = 0;
+        let totalParts = 0;
 
-        let splitReg = /[,;+]/;
-        if (splitReg.test(s) || s.includes('*')) {
-            let tokens = s.split(splitReg);
-            if(tokens.length === 1 && s.includes('*')) tokens = s.split('*').map(t => t === '' ? '*' : t); 
-            
-            let fixedSum = 0; let starCount = 0; let valid = true;
-            tokens.forEach(t => {
-                if (t === '*') starCount++;
-                else { let v = parseFloat(t); if (isNaN(v) || v <= 0) valid = false; else fixedSum += v; }
-            });
+        let parsedData = tokens.map(t => {
+            let isPart = false;
+            let val = 1;
 
-            if (valid && tokens.length > 0) {
-                let avail = totalSpace - (tokens.length - 1) * gapSize;
-                let rem = avail - fixedSum;
-                let starVal = starCount > 0 ? Math.max(10, rem / starCount) : 0; 
-                return tokens.map(t => t === '*' ? starVal : parseFloat(t));
+            if (t.includes('*') || t.includes('r')) {
+                // Jeśli ktoś wpisze '*', '2*' itp.
+                isPart = true;
+                val = parseFloat(t) || 1; 
+            } else {
+                let num = parseFloat(t);
+                if (!isNaN(num)) {
+                    // Jeśli mamy duże liczby w formule (np. 141), to małe cyfry (<20) traktujemy jako proporcje!
+                    // Jeśli nie mamy dużych liczb (np. "3:2:1"), to wszystko jest proporcją.
+                    if ((hasLargeNumbers && num < 20) || !hasLargeNumbers) {
+                        isPart = true;
+                        val = num;
+                    } else {
+                        // To jest wymiar podany na sztywno (np. 141)
+                        isPart = false;
+                        val = num;
+                        fixedSum += val;
+                    }
+                }
             }
-        }
-        return [];
+            if (isPart) totalParts += val;
+            return { isPart, val };
+        });
+
+        // Obliczamy ile miejsca zostało po odjęciu stałych wymiarów i szczelin
+        let gapsTotal = (tokens.length - 1) * gapSize;
+        let availableForParts = totalSpace - fixedSum - gapsTotal;
+        if (availableForParts < 0) availableForParts = 0; // Zabezpieczenie przed ujemnymi wymiarami
+
+        let resultArr = parsedData.map(item => {
+            if (item.isPart) {
+                // Przydzielamy wymiar z reszty proporcjonalnie do "udziałów"
+                return totalParts > 0 ? (availableForParts * (item.val / totalParts)) : 0;
+            } else {
+                return item.val; // Wymiar na sztywno
+            }
+        });
+
+        // Ważne! W systemach klasy Blum wpisujemy od dołu do góry (np. dół:środek:góra).
+        // My rysujemy model od góry do dołu, więc odwracamy tablicę.
+        return resultArr.reverse();
     }
 
     // --- GLOBALNY STAN KORPUSU ---
@@ -397,7 +518,7 @@
         p.back.t = parseFloat(document.getElementById('back_t').value) || 3;
         p.back.zOff = parseFloat(document.getElementById('back_z').value) || 0;
 
-        // --- MATEMATYKA GABARYTÓW WEWNĘTRZNYCH (ŚWIATŁO) ---
+        // Wymiary wewnętrzne HTML update
         let l_t = (p.left.type === 'brak') ? 0 : p.left.t;
         let r_t = (p.right.type === 'brak') ? 0 : p.right.t;
         let top_t = (p.top.type === 'brak') ? 0 : p.top.t;
@@ -411,29 +532,26 @@
         document.getElementById('in_w').innerText = wewW;
         document.getElementById('in_d').innerText = wewD;
 
-        // --- ZCZYTANIE FRONTÓW ---
+        // Zczytanie Frontów
         s.fronts.t = parseFloat(document.getElementById('front_t').value) || 18;
         s.fronts.overlay = document.getElementById('front_overlay').value;
-        s.fronts.formula = document.getElementById('front_formula').value;
 
-        // --- OBLICZANIE PODZIAŁU FRONTÓW (TOP-DOWN) ---
+        // Obliczanie podziału frontów (TOP-DOWN)
         let totalFrontSpaceH = s.box.h - s.gaps.t - s.gaps.b;
         if (s.fronts.overlay === 'wpuszczany') {
-            // Wpuszczane operują w świetle wewnętrznym
             totalFrontSpaceH = wewH - s.gaps.t - s.gaps.b;
         }
         
         s.fronts.output = parseBlumFormula(s.fronts.formula, totalFrontSpaceH, s.gaps.f);
 
-        // Wygenerowanie listy frontów do DOM
+        // Wygenerowanie listy frontów
         let listHtml = '';
         let frontW = s.box.w - s.gaps.l - s.gaps.r;
-        if (s.fronts.overlay === 'wpuszczany') {
-            frontW = wewW - s.gaps.l - s.gaps.r;
-        }
+        if (s.fronts.overlay === 'wpuszczany') frontW = wewW - s.gaps.l - s.gaps.r;
 
         if(s.fronts.output && s.fronts.output.length > 0) {
             s.fronts.output.forEach((h, index) => {
+                // Ponieważ tablica jest odwrócona (najwyższy front na index 0), blumNum liczymy odwrotnie
                 let blumNum = s.fronts.output.length - index;
                 listHtml += `
                 <div class="front-list-item">
@@ -442,7 +560,7 @@
                 </div>`;
             });
         } else {
-            listHtml = `<div style="padding: 15px 20px; color:#d32f2f; font-size:0.85rem; font-weight:bold; background:#fff;">Błędna formuła (np. użyj 3 lub 140;*;200)</div>`;
+            listHtml = `<div style="padding: 15px 20px; color:#d32f2f; font-size:0.85rem; font-weight:bold; background:#fff;">Błędna formuła. Wpisz np. 3 lub 447:298:149</div>`;
         }
         document.getElementById('fronts-list-container').innerHTML = listHtml;
 
@@ -516,7 +634,6 @@
         let r_t = (p.right.type === 'brak') ? 0 : p.right.t;
         let top_t = (p.top.type === 'brak') ? 0 : p.top.t;
         let bot_t = (p.bot.type === 'brak') ? 0 : p.bot.t;
-
         let tr_depth = 100; // Trawers na 10cm
 
         // --- BOK LEWY ---
@@ -632,7 +749,7 @@
     // START
     window.onload = () => {
         init3D();
-        updateDepth('bok'); // Ustawia poprawne dane całkowite na start i wymusza updateState()
+        updateDepth('bok'); 
     };
 </script>
 </body>
