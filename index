@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klon e-SERVICES - Pełny Krok 2 (Korpus + Fronty)</title>
+    <style>
+        /* BAZOWY UKŁAD WZOROWANY NA BLUM */
+        :root { --blum-orange: #f25f22; --bg-main: #f2f2f2; --panel-bg: #ffffff; --text-main: #333; --border-color: #e0e0e0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg-main); color: var(--text-main); }
+        
+        /* GÓRNY PASEK */
+        .top-navbar { position: absolute; top: 0; left: 0; width: 100%; height: 50px; background: #fff; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .logo-area { font-weight: 900; font-size: 1.2rem; color: var(--blum-orange); margin-right: 40px; }
+        .project-name { font-size: 0.9rem; font-weight: bold; color: #555; margin: 0 auto; }
+
+        /* LEWY PANEL (Kategorie) */
+        .sidebar-left { width: 260px; background: var(--panel-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; z-index: 10; }
+        .nav-menu { list-style: none; padding: 0; margin: 0; }
+        .nav-item { border-bottom: 1px solid var(--border-color); }
+        .nav-btn { width: 100%; text-align: left; padding: 15px 20px; background: none; border: none; font-size: 0.95rem; color: #555; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .nav-btn:hover { background: #f9f9f9; color: var(--blum-orange); }
+        .nav-btn.active { background: #fff5f0; color: var(--text-main); border-left: 4px solid var(--blum-orange); padding-left: 16px; font-weight: bold; }
+
+        /* SUB-NARZĘDZIA W LEWYM PANELU */
+        .sub-tools { display: none; padding: 15px; background: #fafafa; border-top: 1px solid #eee; }
+        .tool-btn { width: 100%; padding: 10px; border: 1px dashed var(--blum-orange); background: #fff; color: var(--blum-orange); cursor: pointer; border-radius: 2px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .tool-btn:hover { background: #fff5f0; }
+
+        /* OBSZAR ROBOCZY 3D/2D */
+        .workspace { flex: 1; margin-top: 50px; position: relative; display: flex; justify-content: center; align-items: center; }
+        #canvas-container { width: 100%; height: 100%; }
+        .view-controls { position: absolute; top: 15px; right: 15px; display: flex; border-radius: 4px; overflow: hidden; border: 1px solid #ccc; background: #fff; }
+        .view-controls button { border: none; padding: 8px 15px; background: #fff; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: #555; }
+        .view-controls button.active { background: #e0e0e0; }
+
+        /* PRAWY PANEL 1:1 BLUM */
+        .sidebar-right { width: 360px; background: var(--panel-bg); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; margin-top: 50px; z-index: 10; box-shadow: -2px 0 5px rgba(0,0,0,0.02); }
+        .right-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); color: #555; font-weight: 600; font-size: 0.95rem; text-transform: uppercase; background: #fff; }
+        .right-header .star { color: var(--blum-orange); font-size: 1.2rem; cursor: pointer; background: none; border: none; padding: 0; outline: none; }
+        .right-scroll-area { flex: 1; overflow-y: auto; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .r-acc-header { padding: 10px 20px; display: flex; align-items: center; cursor: pointer; border-bottom: 1px solid #f0f0f0; color: #333; font-size: 0.9rem; transition: background 0.2s; background: #fff; }
+        .r-acc-header:hover { background: #fafafa; }
+        .r-acc-header.active { background: #fdf5f0; border-bottom: 1px solid #fde8dd; }
+        .r-acc-caret { color: var(--blum-orange); margin-right: 12px; font-weight: bold; font-family: monospace; font-size: 1rem; transition: transform 0.2s; display: inline-block; transform: scaleX(0.8); }
+        .r-acc-header.active .r-acc-caret { transform: rotate(90deg) scaleX(0.8); }
+        
+        .r-acc-content { padding: 15px 20px; display: none; background: #fff; border-bottom: 1px solid #f0f0f0; }
+        .r-acc-content.active { display: block; }
+        
+        .blum-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .blum-row label { color: #555; flex: 1; font-size: 0.85rem; }
+        .blum-row input[type="number"], .blum-row input[type="text"], .blum-row select { width: 110px; padding: 5px 8px; border: 1px solid #aaa; border-radius: 2px; text-align: right; color: #333; font-family: inherit; font-size: 0.85rem; box-sizing: border-box; }
+        .blum-row input:focus, .blum-row select:focus { outline: none; border-color: var(--blum-orange); box-shadow: 0 0 0 1px rgba(242,95,34,0.3); }
+        
+        /* Ukrywanie strzałek w input number */
+        .blum-row input[type=number]::-webkit-inner-spin-button, 
+        .blum-row input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .blum-row input[type=number] { -moz-appearance: textfield; }
+
+        .blum-readonly { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .blum-readonly label { color: #888; font-size: 0.85rem; flex: 1; }
+        .blum-readonly span { width: 110px; text-align: right; color: #888; font-size: 0.85rem; padding-right: 8px; box-sizing: border-box; font-weight: bold; }
+        
+        .spacer { height: 10px; }
+
+        /* LISTA FRONTÓW BLUM */
+        .front-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; border-bottom: 1px solid #eee; font-size: 0.85rem; color: #555; background: #fff; }
+        .front-list-item .name { color: var(--blum-orange); font-weight: bold; }
+        .front-list-item .dim { font-weight: bold; color: #333; }
+        .formula-input { width: 100% !important; text-align: center !important; font-weight: bold; color: var(--blum-orange) !important; background: #fff5f0; border-color: var(--blum-orange) !important; }
+    </style>
+    <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+    <div class="top-navbar">
+        <div class="logo-area">blum</div>
+        <div class="project-name">Nazwa korpusu: Szafka dolna szuflady</div>
+    </div>
+
+    <div class="sidebar-left">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <button class="nav-btn active" id="btn-konstrukcja" onclick="switchMainTab('konstrukcja')">Konstrukcja korpusu <span style="color:#aaa;">›</span></button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-btn" id="btn-fronty" onclick="switchMainTab('fronty')">Fronty <span style="color:#aaa;">›</span></button>
+                <div class="sub-tools" id="sub-tools-fronty">
+                    <button class="tool-btn" onclick="focusFrontFormula()">
+                        <div style="width:20px; height:20px; background:var(--blum-orange); border:1px solid #fff; outline:1px solid var(--blum-orange);"></div>
+                        Szczelina pozioma (Podział)
+                    </button>
+                </div>
+            </li>
+            <li class="nav-item"><button class="nav-btn">Konstrukcja wewnętrzna <span style="color:#aaa;">›</span></button></li>
+            <li class="nav-item"><button class="nav-btn">Ścianki tylne <span style="color:#aaa;">›</span></button></li>
+            <li class="nav-item"><button class="nav-btn">Okucia <span style="color:#aaa;">›</span></button></li>
+        </ul>
+    </div>
+
+    <div class="workspace">
+        <div class="view-controls">
+            <button class="active">przód</button>
+        </div>
+        <div id="canvas-container"></div>
+    </div>
+
+    <div class="sidebar-right" id="right-panel">
+        
+        <div id="tab-konstrukcja" class="tab-content active">
+            <div class="right-header">KONSTRUKCJA KORPUSU <button class="star">☆</button></div>
+            <div class="right-scroll-area">
+                
+                <div class="r-acc-header active" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ustawienia podstawowe</div>
+                <div class="r-acc-content active">
+                    <div class="blum-row"><label>Wysokość</label><input type="number" id="cab_h" value="720" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Szerokość</label><input type="number" id="cab_w" value="600" onchange="updateState()"></div>
+                    
+                    <div class="blum-row"><label>Głębokość boku</label><input type="number" id="cab_d" value="510" onchange="updateDepth('bok')"></div>
+                    <div class="blum-row" style="background:#fdf5f0; padding:4px 0; border-radius:2px;"><label style="color:#e65100;">Głębokość całkowita</label><input type="number" id="cab_total_d" value="528" onchange="updateDepth('total')" style="border-color:#ffb74d;"></div>
+                    
+                    <div class="blum-readonly" style="margin-top:10px;"><label>Wysokość wewnętrzna</label><span id="in_h">684</span></div>
+                    <div class="blum-readonly"><label>Szerokość wewnętrzna</label><span id="in_w">564</span></div>
+                    <div class="blum-readonly"><label>Głębokość wewnętrzna</label><span id="in_d">495</span></div>
+                    
+                    <div class="blum-row"><label>Grubość płyty ogólnie</label><input type="number" id="cab_t" value="18" onchange="updateState()"></div>
+                    
+                    <div class="blum-row" style="display:none;">
+                        <label>Typ Pleców</label>
+                        <select id="back_type" onchange="updateDepth('bok')"><option value="nut">Wpuszczane</option><option value="nakladane">Nakładane</option></select>
+                    </div>
+                    <div class="blum-row" style="display:none;"><label>Gr. Pleców</label><input type="number" id="back_t" value="3" onchange="updateDepth('bok')"></div>
+
+                    <div class="spacer"></div>
+                    <div class="blum-row"><label>Szczelina górna</label><input type="number" id="gap_t" value="8" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Szczelina dolna</label><input type="number" id="gap_b" value="0" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Szczelina lewa</label><input type="number" id="gap_l" value="2" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Szczelina prawa</label><input type="number" id="gap_r" value="2" onchange="updateState()"></div>
+                    <div class="blum-row"><label>Szczelina między frontami</label><input type="number" id="gap_f" value="3" onchange="updateState()"></div>
+                </div>
+
+                <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Wieniec górny</div>
+                <div class="r-acc-content">
+                    <div class="blum-row"><label>Konstrukcja</label>
+                        <select><option>Wieniec górny</option><option>Listwa przednia</option></select>
+                    </div>
+                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
+                    <div class="blum-row"><label>Łącznik profili lewy</label>
+                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    </div>
+                    <div class="blum-row"><label>Łącznik profili prawy</label>
+                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    </div>
+                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                </div>
+
+                <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Wieniec dolny</div>
+                <div class="r-acc-content">
+                    <div class="blum-row"><label>Konstrukcja</label>
+                        <select><option>Wieniec dolny</option></select>
+                    </div>
+                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
+                    <div class="blum-row"><label>Łącznik profili lewy</label>
+                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    </div>
+                    <div class="blum-row"><label>Łącznik profili prawy</label>
+                        <select><option>wpuszczany</option><option>nakładany</option></select>
+                    </div>
+                    <div class="blum-row"><label>Odległość wpustu</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                </div>
+
+                <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Lewa strona korpusu</div>
+                <div class="r-acc-content">
+                    <div class="blum-row"><label>Konstrukcja</label>
+                        <select><option>Bok korpusu</option></select>
+                    </div>
+                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                </div>
+
+                <div class="r-acc-header" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Prawa strona korpusu</div>
+                <div class="r-acc-content">
+                    <div class="blum-row"><label>Konstrukcja</label>
+                        <select><option>Bok korpusu</option></select>
+                    </div>
+                    <div class="blum-row"><label>Grubość</label><input type="number" value="18"></div>
+                    <div class="blum-row"><label>Cofnięcie przednie</label><input type="number" value="0"></div>
+                    <div class="blum-row"><label>Cofnięcie tylne</label><input type="number" value="0"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tab-fronty" class="tab-content">
+            <div class="right-header">FRONTY <button class="star">☆</button></div>
+            <div class="right-scroll-area">
+                <div class="r-acc-header active" onclick="toggleRightAcc(this)"><span class="r-acc-caret">></span> Ustawienia Frontów</div>
+                <div class="r-acc-content active">
+                    <div class="blum-row"><label>Grubość frontu</label><input type="number" id="front_t" value="18" onchange="updateDepth('bok')"></div>
+                    <div class="blum-row"><label>Sposób nałożenia</label>
+                        <select id="front_overlay" onchange="updateState()">
+                            <option value="nakladany">nakładany</option>
+                            <option value="wpuszczany">wpuszczany</option>
+                        </select>
+                    </div>
+                    
+                    <div class="spacer"></div>
+                    <label style="font-size: 0.85rem; color: #555; display: block; margin-bottom: 5px; font-weight:bold;">Podział poziomy (Wzór)</label>
+                    <div class="blum-row" style="margin-bottom: 15px;">
+                        <input type="text" id="front_formula" class="formula-input" value="3" onchange="updateState()" title="Wpisz np. 3, albo 140;*;200">
+                    </div>
+                    <div style="font-size: 0.75rem; color: #888; text-align: center; margin-top:-10px; margin-bottom:15px;">np. "3" (równe) lub "140; *; 280"</div>
+                </div>
+                
+                <div id="fronts-list-container"></div>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+    // --- AKORDEONY UI ---
+    function toggleRightAcc(el) {
+        let content = el.nextElementSibling;
+        let isActive = el.classList.contains('active');
+        if (isActive) { el.classList.remove('active'); content.classList.remove('active'); } 
+        else { el.classList.add('active'); content.classList.add('active'); }
+    }
+
+    // --- ZMIANA ZAKŁADEK GŁÓWNYCH ---
+    function switchMainTab(tabId) {
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-' + tabId).classList.add('active');
+        
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+
+        document.querySelectorAll('.sub-tools').forEach(t => t.style.display = 'none');
+        let subTool = document.getElementById('sub-tools-' + tabId);
+        if(subTool) subTool.style.display = 'block';
+    }
+
+    function focusFrontFormula() {
+        document.getElementById('front_formula').focus();
+        document.getElementById('front_formula').select();
+    }
+
+    // --- KALKULATOR GŁĘBOKOŚCI CAŁKOWITEJ/BOKU ---
+    function updateDepth(source) {
+        let tFront = parseFloat(document.getElementById('front_t').value) || 18;
+        let tPlecy = parseFloat(document.getElementById('back_t').value) || 3;
+        let backType = document.getElementById('back_type').value;
+
+        // Ile dodajemy do płyty boku, żeby uzyskać wymiar całej wnęki ze ścianą
+        let extraDepth = tFront;
+        if (backType === 'nakladane') {
+            extraDepth += tPlecy;
+        }
+
+        if (source === 'bok') {
+            let dBox = parseFloat(document.getElementById('cab_d').value) || 510;
+            document.getElementById('cab_total_d').value = dBox + extraDepth;
+        } 
+        else if (source === 'total') {
+            let total = parseFloat(document.getElementById('cab_total_d').value) || 528;
+            document.getElementById('cab_d').value = total - extraDepth;
+        }
+        
+        // Zawsze na koniec przeliczamy i aktualizujemy model 3D
+        updateState();
+    }
+
+    // --- PARSER WZORU BLUM (TOP-DOWN) ---
+    function parseBlumFormula(formulaStr, totalSpace, gapSize) {
+        if (!formulaStr) return [];
+        let s = formulaStr.replace(/\s+/g, '').toLowerCase();
+
+        // 1. Równe podziały (np. "3")
+        if (/^\d+$/.test(s)) {
+            let c = parseInt(s);
+            if (c > 0 && c <= 15) return Array(c).fill((totalSpace - (c - 1) * gapSize) / c);
+        }
+
+        // 2. Proporcje (np. "1:2:2")
+        if (s.includes(':')) {
+            let p = s.split(':').map(Number);
+            if (p.every(n => !isNaN(n) && n > 0)) {
+                let sum = p.reduce((a, b) => a + b, 0);
+                let avail = totalSpace - (p.length - 1) * gapSize;
+                return p.map(n => avail * (n / sum));
+            }
+        }
+
+        // 3. Wartości stałe i gwiazdka (np. "140;*;200")
+        let splitReg = /[,;+]/;
+        if (splitReg.test(s) || s.includes('*')) {
+            let tokens = s.split(splitReg);
+            if(tokens.length === 1 && s.includes('*')) tokens = s.split('*').map(t => t === '' ? '*' : t); 
+            
+            let fixedSum = 0; let starCount = 0; let valid = true;
+            tokens.forEach(t => {
+                if (t === '*') starCount++;
+                else { let v = parseFloat(t); if (isNaN(v) || v <= 0) valid = false; else fixedSum += v; }
+            });
+
+            if (valid && tokens.length > 0) {
+                let avail = totalSpace - (tokens.length - 1) * gapSize;
+                let rem = avail - fixedSum;
+                let starVal = starCount > 0 ? Math.max(10, rem / starCount) : 0; 
+                return tokens.map(t => t === '*' ? starVal : parseFloat(t));
+            }
+        }
+        return [];
+    }
+
+    // --- GLOBALNY STAN KORPUSU ---
+    let cabinetState = {
+        box: { h: 720, w: 600, d: 510, t: 18 },
+        gaps: { t: 8, b: 0, l: 2, r: 2, f: 3 },
+        fronts: { t: 18, overlay: 'nakladany', formula: '3', output: [] }
+    };
+
+    function updateState() {
+        let s = cabinetState;
+        
+        // Zczytanie danych korpusu
+        s.box.h = parseFloat(document.getElementById('cab_h').value) || 720;
+        s.box.w = parseFloat(document.getElementById('cab_w').value) || 600;
+        s.box.d = parseFloat(document.getElementById('cab_d').value) || 510;
+        s.box.t = parseFloat(document.getElementById('cab_t').value) || 18;
+        
+        // Zczytanie szczelin
+        s.gaps.t = parseFloat(document.getElementById('gap_t').value) || 0;
+        s.gaps.b = parseFloat(document.getElementById('gap_b').value) || 0;
+        s.gaps.l = parseFloat(document.getElementById('gap_l').value) || 0;
+        s.gaps.r = parseFloat(document.getElementById('gap_r').value) || 0;
+        s.gaps.f = parseFloat(document.getElementById('gap_f').value) || 0;
+
+        // Wymiary wewnętrzne
+        let wewH = s.box.h - (s.box.t * 2);
+        let wewW = s.box.w - (s.box.t * 2);
+        let backType = document.getElementById('back_type').value;
+        let wewD = s.box.d - (backType === 'nut' ? 15 : 0); // Odejmujemy 15mm na nut, przy nakładanych wnętrze = cały bok
+        
+        document.getElementById('in_h').innerText = wewH;
+        document.getElementById('in_w').innerText = wewW;
+        document.getElementById('in_d').innerText = wewD;
+
+        // Zczytanie Frontów
+        s.fronts.t = parseFloat(document.getElementById('front_t').value) || 18;
+        s.fronts.overlay = document.getElementById('front_overlay').value;
+        s.fronts.formula = document.getElementById('front_formula').value;
+
+        // Przeliczenie podziału frontów (TOP-DOWN)
+        let totalFrontSpaceH = s.box.h - s.gaps.t - s.gaps.b;
+        if (s.fronts.overlay === 'wpuszczany') {
+            totalFrontSpaceH = s.box.h - (2 * s.box.t) - s.gaps.t - s.gaps.b;
+        }
+        
+        s.fronts.output = parseBlumFormula(s.fronts.formula, totalFrontSpaceH, s.gaps.f);
+
+        // Wygenerowanie listy frontów w HTML
+        let listHtml = '';
+        let frontW = s.box.w - s.gaps.l - s.gaps.r;
+        if (s.fronts.overlay === 'wpuszczany') frontW = s.box.w - (2 * s.box.t) - s.gaps.l - s.gaps.r;
+
+        if(s.fronts.output && s.fronts.output.length > 0) {
+            s.fronts.output.forEach((h, index) => {
+                let blumNum = s.fronts.output.length - index;
+                listHtml += `
+                <div class="front-list-item">
+                    <span class="name">› A/${blumNum} Front</span>
+                    <span class="dim">${h.toFixed(1)} x ${frontW.toFixed(1)} mm</span>
+                </div>`;
+            });
+        } else {
+            listHtml = `<div style="padding: 15px 20px; color:#d32f2f; font-size:0.85rem; font-weight:bold; background:#fff;">Błędna formuła (np. użyj 3 lub 140;*;200)</div>`;
+        }
+        document.getElementById('fronts-list-container').innerHTML = listHtml;
+
+        // Odświeżenie widoku 3D
+        render3D();
+    }
+
+    // --- SILNIK 3D (Three.js) ---
+    let scene, camera, renderer, group, controls;
+
+    function init3D() {
+        let container = document.getElementById('canvas-container');
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xe8ebed);
+        
+        camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 1, 10000);
+        camera.position.set(800, 1000, 1800);
+        
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+        
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 400, 0);
+        controls.enableDamping = true;
+        
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        let dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
+        dirLight.position.set(500, 1000, 800);
+        scene.add(dirLight);
+
+        scene.add(new THREE.GridHelper(2000, 40, 0xcccccc, 0xdddddd));
+        group = new THREE.Group();
+        scene.add(group);
+
+        animate();
+        window.addEventListener('resize', () => {
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+        });
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+    function addBoard(w, h, d, x, y, z, mat, edgeMat) {
+        let geom = new THREE.BoxGeometry(w, Math.max(h, 0.1), Math.max(d, 0.1));
+        let mesh = new THREE.Mesh(geom, mat);
+        let edges = new THREE.EdgesGeometry(geom);
+        mesh.add(new THREE.LineSegments(edges, edgeMat));
+        mesh.position.set(x, y, z);
+        group.add(mesh);
+    }
+
+    function render3D() {
+        if (!group) return;
+        while(group.children.length > 0) group.remove(group.children[0]); 
+
+        let s = cabinetState;
+        
+        const matBoard = new THREE.MeshLambertMaterial({ color: 0xe3d6c1 }); 
+        const matEdge = new THREE.LineBasicMaterial({ color: 0x9e8a6a, linewidth: 1 });
+        const matFront = new THREE.MeshLambertMaterial({ color: 0x6184d8, transparent: true, opacity: 0.75 });
+
+        // --- BOKI KORPUSU ---
+        let sideH = s.box.h;
+        addBoard(s.box.t, sideH, s.box.d, -s.box.w/2 + s.box.t/2, sideH/2, s.box.d/2, matBoard, matEdge); 
+        addBoard(s.box.t, sideH, s.box.d, s.box.w/2 - s.box.t/2, sideH/2, s.box.d/2, matBoard, matEdge);
+
+        // --- WIEŃCE KORPUSU ---
+        let wienW = s.box.w - 2*s.box.t;
+        addBoard(wienW, s.box.t, s.box.d, 0, s.box.t/2, s.box.d/2, matBoard, matEdge); // Dół
+        addBoard(wienW, s.box.t, s.box.d, 0, s.box.h - s.box.t/2, s.box.d/2, matBoard, matEdge); // Góra
+
+        // --- FRONTY ---
+        if (s.fronts.output && s.fronts.output.length > 0) {
+            let frontW = s.box.w - s.gaps.l - s.gaps.r;
+            let frontX = 0 + (s.gaps.l / 2) - (s.gaps.r / 2); 
+            let frontZ = s.box.d + (s.fronts.t / 2) + 1; 
+            let currentTopY = s.box.h - s.gaps.t;
+
+            if (s.fronts.overlay === 'wpuszczany') {
+                frontW = s.box.w - (2 * s.box.t) - s.gaps.l - s.gaps.r;
+                frontX = 0; 
+                frontZ = s.box.d - (s.fronts.t / 2);
+                currentTopY = s.box.h - s.box.t - s.gaps.t;
+            }
+
+            s.fronts.output.forEach(fh => {
+                let frontY = currentTopY - (fh / 2);
+                addBoard(frontW, fh, s.fronts.t, frontX, frontY, frontZ, matFront, matEdge);
+                currentTopY -= (fh + s.gaps.f); 
+            });
+        }
+    }
+
+    // START
+    window.onload = () => {
+        init3D();
+        updateDepth('bok'); // Ustawia poprawne dane całkowite na start i wymusza updateState()
+    };
+</script>
+</body>
+</html>
